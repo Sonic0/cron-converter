@@ -47,8 +47,8 @@ class Part:
         unique_values = list(dict.fromkeys(sunday_fixed_values))  # Remove eventual duplicates
         unique_values.sort()
         value = self.out_of_range(unique_values)
-        if value:
-            raise ValueError(f'Value {value} out of range')
+        if value is not None:
+            raise ValueError(f'Value {value!r} out of range for {self.unit.get("name")!r}')
 
         self.values = unique_values
 
@@ -80,17 +80,11 @@ class Part:
             parsed_values = list(dict.fromkeys(flattened_ranges_list))  # Remove eventual duplicates
             parsed_values.sort()
             value = self.out_of_range(parsed_values)
-            if value:
-                raise ValueError(f'Value {value} out of range')
+            if value is not None:
+                raise ValueError(f'Value {value!r} out of range for {self.unit.get("name")!r}')
 
-        try:
-            step_exists = string_parts[1]
-        except IndexError:
-            step_exists = None
-        if step_exists:
-            step = self.parse_step(string_parts[1])  # parse step from string to int
-        else:
-            step = None
+        step = self._get_step(string_parts)
+
         interval_values = self.apply_interval(parsed_values, step)  # filter by step
         if not len(interval_values):
             raise ValueError(f'Empty intervals value {cron_part}')
@@ -139,6 +133,25 @@ class Part:
         else:
             raise ValueError(f'Invalid value {unit_range}')
 
+    """Get the step part of the part string.
+    
+    Args:
+        string_parts (str): the part string.
+
+    Returns:
+        step (int): parsed step.
+    """
+    def _get_step(self, string_parts) -> Union[None, int]:
+        try:
+            step = string_parts[1]
+        except IndexError:
+            step = None
+
+        if step or step == '':
+            step = self._parse_step(step)
+
+        return step
+
     """Parses the step from a part string.
     
     Args:
@@ -147,15 +160,14 @@ class Part:
     Returns:
         return (int) The step value.
     """
-    def parse_step(self, step: str) -> int:
-        if step:
-            try:
-                parsed_step = int(step)
-            except ValueError:
-                raise ValueError(f'Invalid interval step value {step!r}')
-            if not parsed_step or parsed_step < 1:
-                raise ValueError(f'Invalid interval step value {step!r}')
-            return parsed_step
+    def _parse_step(self, step: str) -> int:
+        try:
+            parsed_step = int(step)
+        except (ValueError, TypeError):
+            raise ValueError(f'Invalid interval step value {step!r} for {self.unit.get("name")!r}')
+        if not parsed_step or parsed_step < 1:
+            raise ValueError(f'Invalid interval step value {step!r} for {self.unit.get("name")!r}')
+        return parsed_step
 
     """Applies an interval step to a collection of values.
     
@@ -354,7 +366,8 @@ class Part:
                 cron_ranges = self.to_ranges()
                 for cron_range in cron_ranges:
                     if isinstance(cron_range, list):
-                        cron_range_strings.append(f'{self.format_value(cron_range[0])}-{self.format_value(cron_range[1])}')
+                        cron_range_strings.append(
+                            f'{self.format_value(cron_range[0])}-{self.format_value(cron_range[1])}')
                     else:
                         cron_range_strings.append(f'{self.format_value(cron_range)}')
 

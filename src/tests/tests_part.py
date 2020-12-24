@@ -74,7 +74,7 @@ class PartTest(unittest.TestCase):
 
     def test_parse_step(self):
         part = Part(units[4], {})
-        self.assertEqual(part.parse_step('5'), 5, 'Fail parsing step')
+        self.assertEqual(part._parse_step('5'), 5, 'Fail parsing step')
 
     def test_apply_interval(self):
         part = Part(units[4], {})
