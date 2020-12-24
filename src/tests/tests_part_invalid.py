@@ -9,7 +9,7 @@ class PartTestInvalid(unittest.TestCase):
     @unittest.expectedFailure
     def test_from_string_invalid_0(self):
         part = Part(units[invalid_ranges[0]['unit']], {})
-        part.from_string(invalid_ranges[0]['input'])
+        self.assertRaises(ValueError, part.from_string(invalid_ranges[0]['input']))
 
     @unittest.expectedFailure
     def test_from_string_invalid_1(self):
