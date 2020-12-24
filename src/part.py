@@ -36,7 +36,7 @@ class Part:
                 parsed_value = int(value)
             except ValueError:
                 raise ValueError(f'Invalid list value {value}')
-            if not parsed_value:
+            if parsed_value is None:
                 raise ValueError(f'Invalid list value {value}')
             values.append(parsed_value)
 

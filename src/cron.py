@@ -29,13 +29,13 @@ class Cron:
         self.parts = cron_string.strip().split()
         if len(self.parts) != 5:
             raise ValueError("Invalid cron string format")
-        new_parts = []
+        cron_parts = []
         for item, unit in zip(self.parts, units):
             part = Part(unit, self.options)
             part.from_string(item)
-            new_parts.append(part)
+            cron_parts.append(part)
 
-        self.parts = new_parts
+        self.parts = cron_parts
 
     """Return the cron schedule as a string.
     
@@ -46,6 +46,23 @@ class Cron:
         if not self.parts:
             raise LookupError('No schedule found')
         return ' '.join(str(part) for part in self.parts)
+
+    """Parses a 2-dimentional array of integers as a cron schedule.
+    
+    Args:
+        cron_list (list of list): The 2-dimensional list to parse
+    """
+    def from_list(self, cron_list):
+        cron_parts = []
+        if len(cron_list) != 5:
+            raise ValueError(f'Invalid cron list')
+
+        for cron_part_list, unit in zip(cron_list, units):
+            part = Part(unit, self.options)
+            part.from_list(cron_part_list)
+            cron_parts.append(part)
+
+        self.parts = cron_parts
 
     """Returns the cron schedule as a 2-dimentional list of integers
     
