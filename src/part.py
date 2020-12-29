@@ -19,7 +19,7 @@ class Part:
         return self.to_string()
 
     def __repr__(self):
-        return f'{self.__class__.__name__} - (values:{self.values!r}, unit:{self.unit!r})'
+        return f'{self.__class__.__name__} - (values:{self.values!r}, unit:{self.unit.get("name")!r})'
 
     """Validates a range of positive integers. 
     

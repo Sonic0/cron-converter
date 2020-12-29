@@ -4,6 +4,8 @@ Cron string parser for Python. This project is a transposition in Python of JS [
 
 [![MIT License Badge](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/Sonic0/cron-converter/blob/master/LICENCE)
 
+__This project is WIP__.
+
 ## Install
 
 #### Pip
