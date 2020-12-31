@@ -9,8 +9,11 @@ class SeekerTest(unittest.TestCase):
 
     def test_create_seeker(self):
         cron = Cron()
-        cron.from_string('0-59 0-23 1-31 JAN-DEC SUN-SAT')
-        now = datetime.now(timezone.utc)
-        seeker = Seeker(cron, now)
-        print(seeker.date)
-        self.assertEqual(0, 1, 'NP')
+        cron.from_string('*/5 * * * *')
+        seeker = cron.schedule()
+
+        print("###")
+        print(seeker.next())
+        print("-------")
+        print(seeker.next())
+        self.assertTrue(True)

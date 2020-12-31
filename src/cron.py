@@ -1,9 +1,9 @@
 from part import Part
 from units import units
-# from seeker import Seeker
-# from datetime import datetime
+from seeker import Seeker
+from datetime import datetime
 
-# from typing import Optional
+from typing import Optional
 
 
 class Cron:
@@ -85,5 +85,5 @@ class Cron:
     Returns:
         Seeker (Object): A schedule iterator.
     """
-    # def schedule(self, start_time: Optional[datetime] = None):
-    #     return Seeker(self, start_time)
+    def schedule(self, start_time: Optional[datetime] = None):
+        return Seeker(self, start_time)
