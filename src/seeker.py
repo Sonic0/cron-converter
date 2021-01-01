@@ -35,7 +35,7 @@ class Seeker:
             self.tz_info = start_time.tzinfo
             self.date = start_time
         else:
-            self.date = datetime.now(timezone.utc)
+            raise ValueError('Input schedule start time is not a valid datetime object')
 
         if self.date.second > 0:
             # Add a minute to the date to prevent returning dates in the past
@@ -105,7 +105,8 @@ class Seeker:
 
     def _shift_day(self, cron_day_part: 'Part', cron_weekday_part: 'Part'):
         current_month = self.date.month
-        while self.date.day not in cron_day_part.to_list() or weekdays.get(self.date.strftime("%a")) not in cron_weekday_part.to_list():
+        while self.date.day not in cron_day_part.to_list() or \
+                weekdays.get(self.date.strftime("%a")) not in cron_weekday_part.to_list():
             self.date = self.date + timedelta(days=+1)
             if current_month != self.date.month:
                 self.date = self.date.replace(day=1, hour=00, minute=00)
