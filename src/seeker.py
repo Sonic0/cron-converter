@@ -1,7 +1,6 @@
 from datetime import datetime, tzinfo, timezone, timedelta
 import calendar
 import copy
-from dateutil.relativedelta import relativedelta
 from collections import namedtuple
 from typing import Optional
 
@@ -11,7 +10,7 @@ if TYPE_CHECKING:
     from cron import Cron
     from part import Part
 
-weekdays = {'Sun': 0, 'Mon': 1, 'Tue': 2, 'Wed': 3, 'Thu': 4, 'Fri': 5, 'Sut': 6}  # en_US weekdays
+weekdays = {'Sun': 0, 'Mon': 1, 'Tue': 2, 'Wed': 3, 'Thu': 4, 'Fri': 5, 'Sat': 6}  # en_US weekdays
 
 
 def _add_months(date: 'datetime', months):
@@ -19,7 +18,7 @@ def _add_months(date: 'datetime', months):
     year = date.year + month // 12
     month = month % 12 + 1
     # day = min(self.date.day, calendar.monthrange(year, month)[1])
-    return date.replace(year=year, month=month, day=1)
+    return date.replace(year=year, month=month, day=1)  # day=1 if next(), day=lastOfMonth if prev()
 
 
 class Seeker:
@@ -38,7 +37,11 @@ class Seeker:
         else:
             self.date = datetime.now(timezone.utc)
 
-        self.start_time = self.date.replace(second=0, microsecond=0)
+        if self.date.second > 0:
+            # Add a minute to the date to prevent returning dates in the past
+            self.date = self.date + timedelta(minutes=+1)
+
+        self.start_time = self.date
         self.cron = cron
         self.date = self.start_time
         self.pristine = True
@@ -93,19 +96,19 @@ class Seeker:
         if not retry:
             raise Exception('Unable to find execution time for schedule')
 
-        return copy.deepcopy(self.date)
+        return copy.deepcopy(self.date.replace(second=0, microsecond=0))
 
     def _shift_month(self, cron_month_part: 'Part'):
-        date_while = copy.copy(self.date)
-        while _add_months(date_while, 1).month not in cron_month_part.to_list():
+        while self.date.month not in cron_month_part.to_list():
             self.date = _add_months(self.date, 1)
+            self.date = self.date.replace(day=1, hour=00, minute=00)
 
     def _shift_day(self, cron_day_part: 'Part', cron_weekday_part: 'Part'):
         current_month = self.date.month
         while self.date.day not in cron_day_part.to_list() or weekdays.get(self.date.strftime("%a")) not in cron_weekday_part.to_list():
             self.date = self.date + timedelta(days=+1)
             if current_month != self.date.month:
-                self.date = self.date.replace(days=00)
+                self.date = self.date.replace(day=1, hour=00, minute=00)
                 return True
         return False
 
@@ -114,7 +117,7 @@ class Seeker:
         while self.date.hour not in cron_hour_part.to_list():
             self.date = self.date + timedelta(hours=+1)
             if current_day != self.date.day:
-                self.date = self.date.replace(hours=00)
+                self.date = self.date.replace(hour=00, minute=00)
                 return True
         return False
 
@@ -123,6 +126,6 @@ class Seeker:
         while self.date.minute not in cron_minute_part.to_list():
             self.date = self.date + timedelta(minutes=+1)
             if current_hour != self.date.hour:
-                self.date = self.date.replace(minutes=00) # se cambia ora e quindi vado una avanti o una indietro, allora devo resettare i minuti
+                self.date = self.date.replace(minute=00) # se cambia ora e quindi vado una avanti o una indietro, allora devo resettare i minuti
                 return True
         return False
