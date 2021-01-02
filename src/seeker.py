@@ -53,30 +53,37 @@ class Seeker:
         self.date = self.start_time
 
     """Returns the time the schedule would run next.
+    
+     Returns:
+        (datetime): The time the schedule would run next.
     """
-    def next(self):
+    def next(self) -> datetime:
         if self.pristine:
             self.pristine = False
         else:
             one_minute = timedelta(minutes=1)
             self.date = self.date + one_minute  # so that next is never now
 
-        return self.find_date(self.cron.parts)
+        return self.find_date(getattr(self.cron, 'parts'))
 
     """Returns the time the schedule would have last run at.
-    """
-    def prev(self):
-        self.pristine = False
-        return self.find_date(self.cron.parts, True)
-
-    """Returns the time the schedule would run next. # TODO refactor description 
-    
-    Args:
     
     Returns:
-    
+        (datetime): The time the schedule would have last run at.
     """
-    def find_date(self, cron_parts: List['Part'], reverse: bool = False):
+    def prev(self) -> datetime:
+        self.pristine = False
+        return self.find_date(getattr(self.cron, 'parts'), True)
+
+    """Returns the time the schedule would run next. # TODO refactor description.
+    
+    Args:
+        cron_parts (List): List of all cron 'Part'.
+        reverse(boolean): Whether to find the previous value instead of next.
+    Returns:
+        (datetime): A new datetime object. The date the schedule would have executed at.
+    """
+    def find_date(self, cron_parts: List['Part'], reverse: bool = False) -> datetime:
         # operation = 'add'
         # reset = 'start_of'
         # if reverse:
@@ -84,7 +91,8 @@ class Seeker:
         #     reset = 'end_of'
         #     # self.date.subtract(1, 'minute'); // Ensure prev and next cannot be same time
         retry = 24
-        for i in range(retry, 0, -1):
+        while retry:
+            retry -= 1
             self._shift_month(cron_parts[3])
             month_changed = self._shift_day(cron_parts[2], cron_parts[4])
             if not month_changed:
@@ -93,17 +101,31 @@ class Seeker:
                     hour_changed = self._shift_minute(cron_parts[0])
                     if not hour_changed:
                         break
-        if not retry:
+        else:
             raise Exception('Unable to find execution time for schedule')
 
         return copy.deepcopy(self.date.replace(second=0, microsecond=0))
 
-    def _shift_month(self, cron_month_part: 'Part'):
+    """Increments/decrements the month value of a date, until a month that matches the schedule is found.
+    
+    Args:
+        cron_month_part (Part): The month 'Part' object.
+        operation (str): The function to call on date: 'add' or 'subtract'.
+    """
+    def _shift_month(self, cron_month_part: 'Part') -> None:
         while self.date.month not in cron_month_part.to_list():
             self.date = _add_months(self.date, 1)
             self.date = self.date.replace(day=1, hour=00, minute=00)
 
-    def _shift_day(self, cron_day_part: 'Part', cron_weekday_part: 'Part'):
+    """Increments/decrements the day value of a date, until a day that matches the schedule is found.
+
+    Args:
+        cron_day_part (Part): The days 'Part' object.
+        operation (str): The function to call on date: 'add' or 'subtract'.
+    Returns:
+        (boolean): Whether the month of the date was changed.
+    """
+    def _shift_day(self, cron_day_part: 'Part', cron_weekday_part: 'Part') -> bool:
         current_month = self.date.month
         while self.date.day not in cron_day_part.to_list() or \
                 weekdays.get(self.date.strftime("%a")) not in cron_weekday_part.to_list():
@@ -113,7 +135,15 @@ class Seeker:
                 return True
         return False
 
-    def _shift_hour(self, cron_hour_part: 'Part'):
+    """Increments/decrements the hour value of a date, until an hour that matches the schedule is found.
+
+    Args:
+        cron_hour_part (Part): The hours 'Part' object
+        operation (str): The function to call on date: 'add' or 'subtract'
+    Returns:
+        (boolean): Whether the day of the date was changed
+    """
+    def _shift_hour(self, cron_hour_part: 'Part') -> bool:
         current_day = self.date.day
         while self.date.hour not in cron_hour_part.to_list():
             self.date = self.date + timedelta(hours=+1)
@@ -122,11 +152,21 @@ class Seeker:
                 return True
         return False
 
-    def _shift_minute(self, cron_minute_part: 'Part'):
+    """Increments/decrements the minute value of a date, until a minute that matches the schedule is found.
+
+    Args:
+        cron_minute_part (Part): The minutes 'Part' object
+        operation (str): The function to call on date: 'add' or 'subtract'
+
+    Returns:
+        (boolean): Whether the hour of the date was changed
+    """
+    def _shift_minute(self, cron_minute_part: 'Part') -> bool:
         current_hour = self.date.hour
         while self.date.minute not in cron_minute_part.to_list():
             self.date = self.date + timedelta(minutes=+1)
             if current_hour != self.date.hour:
-                self.date = self.date.replace(minute=00) # se cambia ora e quindi vado una avanti o una indietro, allora devo resettare i minuti
+                # If the hour change (either hour +1 or -1), then reset the hour
+                self.date = self.date.replace(minute=00)
                 return True
         return False

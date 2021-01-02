@@ -237,7 +237,7 @@ class Part:
     """Returns true if range has all the values of the unit.
     
     Returns:
-        return (boolean).
+        (boolean).
     """
     def is_full(self) -> bool:
         return len(self.values) == self.unit.get('max') - self.unit.get('min') + 1
