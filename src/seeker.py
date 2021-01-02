@@ -1,24 +1,15 @@
 from datetime import datetime, tzinfo, timezone, timedelta
 import calendar
 import copy
-from collections import namedtuple
 from typing import Optional
 
-from typing import TYPE_CHECKING, List
+from typing import TYPE_CHECKING, List, Literal
 
 if TYPE_CHECKING:
     from cron import Cron
     from part import Part
 
 weekdays = {'Sun': 0, 'Mon': 1, 'Tue': 2, 'Wed': 3, 'Thu': 4, 'Fri': 5, 'Sat': 6}  # en_US weekdays
-
-
-def _add_months(date: 'datetime', months):
-    month = date.month - 1 + months
-    year = date.year + month // 12
-    month = month % 12 + 1
-    # day = min(self.date.day, calendar.monthrange(year, month)[1])
-    return date.replace(year=year, month=month, day=1)  # day=1 if next(), day=lastOfMonth if prev()
 
 
 class Seeker:
@@ -62,7 +53,8 @@ class Seeker:
             self.pristine = False
         else:
             one_minute = timedelta(minutes=1)
-            self.date = self.date + one_minute  # so that next is never now
+            # Ensure next is never now
+            self.date = self.date + one_minute
 
         return self.find_date(getattr(self.cron, 'parts'))
 
@@ -73,6 +65,8 @@ class Seeker:
     """
     def prev(self) -> datetime:
         self.pristine = False
+        # Ensure prev and next cannot be same time
+        self.date = self.date + timedelta(minutes=-1)
         return self.find_date(getattr(self.cron, 'parts'), True)
 
     """Returns the time the schedule would run next. # TODO refactor description.
@@ -84,21 +78,18 @@ class Seeker:
         (datetime): A new datetime object. The date the schedule would have executed at.
     """
     def find_date(self, cron_parts: List['Part'], reverse: bool = False) -> datetime:
-        # operation = 'add'
-        # reset = 'start_of'
-        # if reverse:
-        #     operation = 'subtract'
-        #     reset = 'end_of'
-        #     # self.date.subtract(1, 'minute'); // Ensure prev and next cannot be same time
+        operation: Literal['add', 'subtract'] = 'add'
+        if reverse:
+            operation = 'subtract'
         retry = 24
         while retry:
             retry -= 1
-            self._shift_month(cron_parts[3])
-            month_changed = self._shift_day(cron_parts[2], cron_parts[4])
+            self._shift_month(cron_parts[3], operation)
+            month_changed = self._shift_day(cron_parts[2], cron_parts[4], operation)
             if not month_changed:
-                day_changed = self._shift_hour(cron_parts[1])
+                day_changed = self._shift_hour(cron_parts[1], operation)
                 if not day_changed:
-                    hour_changed = self._shift_minute(cron_parts[0])
+                    hour_changed = self._shift_minute(cron_parts[0], operation)
                     if not hour_changed:
                         break
         else:
@@ -110,28 +101,31 @@ class Seeker:
     
     Args:
         cron_month_part (Part): The month 'Part' object.
-        operation (str): The function to call on date: 'add' or 'subtract'.
+        operation (Literal['add', 'subtract']): The function to call on date: 'add' or 'subtract'.
     """
-    def _shift_month(self, cron_month_part: 'Part') -> None:
+    def _shift_month(self, cron_month_part: 'Part', operation: Literal['add', 'subtract']) -> None:
         while self.date.month not in cron_month_part.to_list():
-            self.date = _add_months(self.date, 1)
-            self.date = self.date.replace(day=1, hour=00, minute=00)
+            self.date = self._calc_months(self.date, 1, operation)
 
     """Increments/decrements the day value of a date, until a day that matches the schedule is found.
 
     Args:
         cron_day_part (Part): The days 'Part' object.
-        operation (str): The function to call on date: 'add' or 'subtract'.
+        operation (Literal['add', 'subtract']): The function to call on date: 'add' or 'subtract'.
     Returns:
         (boolean): Whether the month of the date was changed.
     """
-    def _shift_day(self, cron_day_part: 'Part', cron_weekday_part: 'Part') -> bool:
+    def _shift_day(self, cron_day_part: 'Part', cron_weekday_part: 'Part', operation: Literal['add', 'subtract']) -> bool:
         current_month = self.date.month
         while self.date.day not in cron_day_part.to_list() or \
                 weekdays.get(self.date.strftime("%a")) not in cron_weekday_part.to_list():
-            self.date = self.date + timedelta(days=+1)
+            if operation == 'add':
+                self.date = self.date + timedelta(days=+1)
+                self.date = self.date.replace(hour=0, minute=0, second=0)
+            else:
+                self.date = self.date + timedelta(days=-1)
+                self.date = self.date.replace(hour=23, minute=59, second=59)
             if current_month != self.date.month:
-                self.date = self.date.replace(day=1, hour=00, minute=00)
                 return True
         return False
 
@@ -139,34 +133,65 @@ class Seeker:
 
     Args:
         cron_hour_part (Part): The hours 'Part' object
-        operation (str): The function to call on date: 'add' or 'subtract'
+        operation (Literal['add', 'subtract']): The function to call on date: 'add' or 'subtract'.
     Returns:
         (boolean): Whether the day of the date was changed
     """
-    def _shift_hour(self, cron_hour_part: 'Part') -> bool:
+    def _shift_hour(self, cron_hour_part: 'Part', operation: Literal['add', 'subtract']) -> bool:
         current_day = self.date.day
         while self.date.hour not in cron_hour_part.to_list():
-            self.date = self.date + timedelta(hours=+1)
+            if operation == 'add':
+                self.date = self.date + timedelta(hours=+1)
+                self.date = self.date.replace(minute=00, second=0)
+            else:
+                self.date = self.date + timedelta(hours=-1)
+                self.date = self.date.replace(minute=59, second=59)
             if current_day != self.date.day:
-                self.date = self.date.replace(hour=00, minute=00)
                 return True
         return False
 
     """Increments/decrements the minute value of a date, until a minute that matches the schedule is found.
 
     Args:
-        cron_minute_part (Part): The minutes 'Part' object
-        operation (str): The function to call on date: 'add' or 'subtract'
+        cron_minute_part (Part): The minutes 'Part' object.
+        operation (Literal['add', 'subtract']): The function to call on date: 'add' or 'subtract'.
 
     Returns:
-        (boolean): Whether the hour of the date was changed
+        (boolean): Whether the hour of the date was changed.
     """
-    def _shift_minute(self, cron_minute_part: 'Part') -> bool:
+    def _shift_minute(self, cron_minute_part: 'Part', operation: Literal['add', 'subtract']) -> bool:
         current_hour = self.date.hour
         while self.date.minute not in cron_minute_part.to_list():
-            self.date = self.date + timedelta(minutes=+1)
+            if operation == 'add':
+                self.date = self.date + timedelta(minutes=+1)
+                self.date = self.date.replace(second=0)
+            else:
+                self.date = self.date + timedelta(minutes=-1)
+                self.date = self.date.replace(second=59)
             if current_hour != self.date.hour:
-                # If the hour change (either hour +1 or -1), then reset the hour
-                self.date = self.date.replace(minute=00)
                 return True
         return False
+
+    """Static method to increment/decrement the month value of a datetime Object.
+    
+    Args:
+        date (datetime): Date Object it increments/decrements the month value to.
+        months (int): Number of months to add at the provided input date Object
+        operation (Literal['add', 'subtract']): The function to call on date: 'add' or 'subtract'.
+    Returns:
+        (datetime): The input datetime object incremented or decremented.
+    """
+    @staticmethod
+    def _calc_months(date: 'datetime', months: int, operation: Literal['add', 'subtract']) -> datetime:
+        if operation == 'add':
+            month = date.month - 1 + months
+        else:
+            month = date.month - 1 - months
+        year = date.year + month // 12
+        month = month % 12 + 1
+        if operation == 'add':
+            return date.replace(year=year, month=month, day=1, hour=00, minute=00, second=00)
+        else:
+            # Get the last day of the month
+            max_month_day = calendar.monthrange(year, month)[1]
+            return date.replace(year=year, month=month, day=max_month_day, hour=23, minute=59, second=59)
