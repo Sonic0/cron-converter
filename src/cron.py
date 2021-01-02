@@ -1,6 +1,7 @@
-from part import Part
-from units import units
-from seeker import Seeker
+from sub_modules.part import Part
+from sub_modules.units import units
+from sub_modules.seeker import Seeker
+
 from datetime import datetime
 
 from typing import Optional
@@ -14,7 +15,9 @@ class Cron:
     Attributes:
         options (dict): The options to use
     """
-    def __init__(self, options=None):
+    def __init__(self, cron_string: str = None, options=None):
+        if cron_string:
+            self.from_string(cron_string)
         self.options = options if bool(options) else dict()
         self.parts = None
 

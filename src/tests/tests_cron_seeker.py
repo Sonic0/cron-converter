@@ -16,6 +16,15 @@ class SeekerTest(unittest.TestCase):
                 schedule = cron.schedule(datetime.fromisoformat(valid_schedule['now']))
                 self.assertEqual(schedule.prev().isoformat(), valid_schedule['prev'], 'Failed seeking the previous schedule date')
 
+    def test_next_of_next(self):
+        for valid_schedule in valid_schedules:
+            with self.subTest(range=valid_schedule):
+                cron = Cron()
+                cron.from_string(valid_schedule['schedule'])
+                schedule = cron.schedule(datetime.fromisoformat(valid_schedule['now']))
+                schedule.next()
+                self.assertEqual(schedule.next().isoformat(), valid_schedule['next_next'], 'Failed seeking the next schedule date')
+
     def test_next(self):
         for valid_schedule in valid_schedules:
             with self.subTest(range=valid_schedule):

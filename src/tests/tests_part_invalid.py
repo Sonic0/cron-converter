@@ -1,6 +1,6 @@
 import unittest
-from part import Part
-from units import units
+from sub_modules.part import Part
+from sub_modules.units import units
 
 from tests.statics.invalid_ranges import invalid_ranges
 

@@ -1,4 +1,4 @@
-from datetime import datetime, tzinfo, timezone, timedelta
+from datetime import datetime, timedelta
 import calendar
 import copy
 from typing import Optional
@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING, List, Literal
 
 if TYPE_CHECKING:
     from cron import Cron
-    from part import Part
+    from sub_modules.part import Part
 
 weekdays = {'Sun': 0, 'Mon': 1, 'Tue': 2, 'Wed': 3, 'Thu': 4, 'Fri': 5, 'Sat': 6}  # en_US weekdays
 
