@@ -1,6 +1,7 @@
 # cron-converter
 
-Cron-converter provides a Cron string parser for Python (in lists) and iteration for the datetime object with a cron like format. This project is a transposition in Python of JS [cron-converter](https://github.com/roccivic/cron-converter) by [roccivic](https://github.com/roccivic). 
+Cron-converter provides a Cron string parser ( from string/list to string/lists ) and iteration for the datetime object with a cron like format. <br>
+This project is a transposition in Python of JS [cron-converter](https://github.com/roccivic/cron-converter) by [roccivic](https://github.com/roccivic). 
 
 [![MIT License Badge](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/Sonic0/cron-converter/blob/master/LICENCE)
 
@@ -56,7 +57,7 @@ print(cron_instance.to_list())
 
 ### Parse an Array
 ```python
-cron_instance.from_array([[0], [1], [1], [5], [0,2,4,6]])
+cron_instance.from_list([[0], [1], [1], [5], [0,2,4,6]])
 
 # Prints: '0 1 1 5 */2'
 print(cron_instance.to_string())
@@ -71,7 +72,7 @@ cron_instance = Cron(None, {
   'outputWeekdayNames': True,
   'outputMonthNames': True
 })
-cron_instance.fromString('*/5 9-17/2 * 1-3 1-5')
+cron_instance.from_string('*/5 9-17/2 * 1-3 1-5')
 # Prints: '*/5 *(10-16)/2 * JAN-MAR MON-FRI'
 print(cron_instance)
 ```
@@ -88,7 +89,7 @@ print(cron_instance)
 ### Get the schedule execution times. Example with raw Datetime
 ```python
 # Parse a string to init a schedule
-cron_instance.fromString('*/5 * * * *')
+cron_instance.from_string('*/5 * * * *')
 
 # Optionally, use a reference Date or moment object
 reference = datetime.now()  # Raw datetime without timezone info (not aware)
