@@ -1,5 +1,7 @@
 # cron-converter
-
+<p align="center">
+  <img src="https://cdn.webservertalk.com/wp-content/uploads/cron-jobs-656x410.png" width="450" title="Cron Syntax">
+</p>
 Cron-converter provides a Cron string parser ( from string/list to string/lists ) and iteration for the datetime object with a cron like format. <br>
 This project is a transposition in Python of JS [cron-converter](https://github.com/roccivic/cron-converter) by [roccivic](https://github.com/roccivic). 
 
@@ -16,20 +18,20 @@ pip install cron-converter
 
 ## Use
 ```python
-from cron-converter import Cron
+from cron_converter import cron
 ```
 
 ### Create a new instance
 ```python
-cron_instance = Cron()
+cron_instance = cron.Cron()
 ```
 or
 ```python
-cron_instance = Cron('*/10 9-17 1 * *')
+cron_instance = cron.Cron('*/10 9-17 1 * *')
 ```
 or (with constructor options)
 ```python
-cron_instance = Cron('*/10 9-17 1 * *', {
+cron_instance = cron.Cron('*/10 9-17 1 * *', {
   'outputWeekdayNames': True,
   'outputMonthNames': True
 })
@@ -121,11 +123,11 @@ Example using pytz:
     from datetime import datetime
     import pytz
     from datetime import datetime
-    from cron_converter import Cron
+    from cron_converter import cron
 
     tz = pytz.timezone("Europe/Rome")
     local_date = tz.localize(datetime(2021, 1, 1))
-    cron = Cron('0 0 * * *')
+    cron = cron.Cron('0 0 * * *')
     next_schedule = cron.schedule(local_date).next()
     # Prints: '2021-01-01T09:25:00+01:00'
     print(next_schedule.isoformat())
@@ -134,11 +136,11 @@ Example using python_dateutil:
 ```python
     import dateutil.tz
     from datetime import datetime
-    from cron_converter import Cron
+    from cron_converter import cron
 
     tz = dateutil.tz.gettz('Asia/Tokyo')
     local_date = datetime(2021, 1, 1, tzinfo=tz)
-    cron = Cron('0 0 * * *')
+    cron = cron.Cron('0 0 * * *')
     next_schedule = cron.schedule(local_date).next()
     # Prints: '2021-01-01T17:25:00+09:00'
     print(next_schedule.isoformat())
@@ -152,5 +154,5 @@ Cron-converter is NOT able to do second repetition crontabs form.
 ```bash
 git clone https://github.com/Sonic0/cron-converter
 cd cron-converter
-
+# TODO this step
 ```

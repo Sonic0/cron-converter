@@ -1,9 +1,9 @@
 import unittest
 from datetime import datetime
 
-from cron import Cron
+from src.cron_converter.cron import Cron
 
-from tests.statics.valid_schedule_date import valid_schedules
+from tests.data.valid_schedule_date import valid_schedules
 
 
 class SeekerTest(unittest.TestCase):

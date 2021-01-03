@@ -1,11 +1,11 @@
 import unittest
 
-from cron import Cron
+from src.cron_converter.cron import Cron
 
-from tests.statics.invalid_crons import invalid_crons
+from tests.data.invalid_crons import invalid_crons
 
 
-class CronTest(unittest.TestCase):
+class CronTestInvalid(unittest.TestCase):
 
     def test_from_string(self):
         for invalid_cron in invalid_crons:

@@ -1,8 +1,8 @@
 import unittest
 
-from cron import Cron
+from src.cron_converter.cron import Cron
 
-from tests.statics.valid_crons import valid_crons_string, valid_crons_to_list, valid_crons_list
+from tests.data.valid_crons import valid_crons_string, valid_crons_to_list, valid_crons_list
 
 
 class CronTest(unittest.TestCase):

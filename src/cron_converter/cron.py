@@ -1,6 +1,6 @@
-from sub_modules.part import Part
-from sub_modules.units import units
-from sub_modules.seeker import Seeker
+from .sub_modules.part import Part
+from .sub_modules.units import units
+from .sub_modules.seeker import Seeker
 
 from datetime import datetime
 

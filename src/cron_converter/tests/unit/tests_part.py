@@ -2,7 +2,7 @@ import unittest
 from sub_modules.part import Part
 from sub_modules.units import units
 
-from tests.statics.valid_ranges import valid_ranges
+from tests.data.valid_ranges import valid_ranges
 
 
 class PartTest(unittest.TestCase):
