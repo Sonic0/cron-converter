@@ -1,26 +1,27 @@
-name: Run Python Unit and Integration tests
+name: Unit and Integration tests
 on:
   push:
-    branches:
-      - master
+    branches: [ main ]
   pull_request:
-    branches:
-      - master
+    branches: [ main ]
 
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+
       - name: Install Python 3
         uses: actions/setup-python@v1
         with:
           python-version: 3.8
 #          python-version: [3.6, 3.7, 3.8]
+
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements/test.txt
+
       - name: Run tests with pytest
         run: |
           python -m unittest discover -s src/cron_converter/tests/unit
