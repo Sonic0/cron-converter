@@ -3,7 +3,7 @@ from datetime import datetime
 
 from src.cron_converter.cron import Cron
 
-from tests.data.valid_schedule_date import valid_schedules
+from fixtures.valid_schedule_date import valid_schedules
 
 
 class SeekerTest(unittest.TestCase):

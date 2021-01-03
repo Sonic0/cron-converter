@@ -2,7 +2,7 @@ import unittest
 
 from src.cron_converter.cron import Cron
 
-from tests.data.invalid_crons import invalid_crons
+from fixtures.invalid_crons import invalid_crons
 
 
 class CronTestInvalid(unittest.TestCase):
