@@ -1,13 +1,13 @@
-# cron-converter
 <p align="center">
-  <img src="https://cdn.webservertalk.com/wp-content/uploads/cron-jobs-656x410.png" width="450" title="Cron Syntax">
+  <img src="https://raw.githubusercontent.com/Sonic0/cron-converter/blob/main/logo.png" title="Cron-converter">
 </p>
 
-Cron-converter provides a Cron string parser ( from string/list to string/lists ) and iteration for the datetime object with a cron like format.<br>
+Cron-converter provides a Cron string parser ( from string/lists to string/lists ) and iteration for the datetime object with a cron like format.<br>
 This project is a transposition in Python of JS [cron-converter](https://github.com/roccivic/cron-converter) by [roccivic](https://github.com/roccivic). 
 
 [![MIT License Badge](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/Sonic0/cron-converter/blob/master/LICENCE)
 ![Unit and Integration tests](https://github.com/Sonic0/cron-converter/workflows/Unit%20and%20Integration%20tests/badge.svg)
+[![codebeat badge](https://codebeat.co/badges/33cfdde8-34ce-4fcc-85b6-2031d919639f)](https://codebeat.co/projects/github-com-sonic0-cron-converter-main)
 
 ## Install
 
@@ -149,12 +149,11 @@ Example using python_dateutil:
 ## About seconds repeats
 Cron-converter is NOT able to do second repetition crontabs form.
 
-## Test
+## Develop & Tests
 
 ```bash
 git clone https://github.com/Sonic0/cron-converter
 cd cron-converter
-pip install -r requirements/test.txt
 python -m unittest discover -s src/cron_converter/tests/unit
 python -m unittest discover -s src/cron_converter/tests/integration
 ```
