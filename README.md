@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://raw.githubusercontent.com/Sonic0/cron-converter/blob/main/logo.png" title="Cron-converter">
+  <img src="https://raw.githubusercontent.com/Sonic0/cron-converter/main/logo.png" title="Cron-converter">
 </p>
 
 Cron-converter provides a Cron string parser ( from string/lists to string/lists ) and iteration for the datetime object with a cron like format.<br>
