@@ -32,8 +32,8 @@ cron_instance = Cron('*/10 9-17 1 * *')
 or (with constructor options)
 ```python
 cron_instance = Cron('*/10 9-17 1 * *', {
-  'outputWeekdayNames': True,
-  'outputMonthNames': True
+  'output_weekday_names': True,
+  'output_month_names': True
 })
 ```
 
@@ -71,8 +71,8 @@ print(cron_instance.to_string())
 
 ```python
 cron_instance = Cron(None, {
-  'outputWeekdayNames': True,
-  'outputMonthNames': True
+  'output_weekday_names': True,
+  'output_month_names': True
 })
 cron_instance.from_string('*/5 9-17/2 * 1-3 1-5')
 # Prints: '*/5 *(10-16)/2 * JAN-MAR MON-FRI'
@@ -101,6 +101,7 @@ schedule = cron_instance.schedule(reference)
 # Calls to .next() and .prev()
 # return a Datetime object
 
+# Examples with time now: '2021-01-01T09:32:00
 # Prints: '2021-01-01T09:35:00'
 print(schedule.next().isoformat())
 # Prints: '2021-01-01T09:40:00'
@@ -120,16 +121,15 @@ Be sure to init your cron-converter instance with a TZ aware datetime for this t
 
 Example using pytz:
 ```python
-    from datetime import datetime
-    import pytz
+    from pytz import timezone
     from datetime import datetime
     from cron_converter import Cron
 
-    tz = pytz.timezone("Europe/Rome")
+    tz = timezone("Europe/Rome")
     local_date = tz.localize(datetime(2021, 1, 1))
     cron = Cron('0 0 * * *')
     next_schedule = cron.schedule(local_date).next()
-    # Prints: '2021-01-01T09:25:00+01:00'
+    # Prints: '2021-01-02T00:00:00+01:00'
     print(next_schedule.isoformat())
 ```
 Example using python_dateutil:
@@ -142,7 +142,7 @@ Example using python_dateutil:
     local_date = datetime(2021, 1, 1, tzinfo=tz)
     cron = Cron('0 0 * * *')
     next_schedule = cron.schedule(local_date).next()
-    # Prints: '2021-01-01T17:25:00+09:00'
+    # Prints: '2021-01-02T00:00:00+09:00'
     print(next_schedule.isoformat())
 ```
 
