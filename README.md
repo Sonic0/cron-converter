@@ -3,7 +3,7 @@
 </p>
 
 Cron-converter provides a Cron string parser ( from string/lists to string/lists ) and iteration for the datetime object with a cron like format.<br>
-This project is a transposition in Python of JS [cron-converter](https://github.com/roccivic/cron-converter) by [roccivic](https://github.com/roccivic). 
+This project would be a transposition in Python of JS [cron-converter](https://github.com/roccivic/cron-converter) by [roccivic](https://github.com/roccivic). 
 
 [![MIT License Badge](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/Sonic0/cron-converter/blob/master/LICENCE)
 ![Unit and Integration tests](https://github.com/Sonic0/cron-converter/workflows/Unit%20and%20Integration%20tests/badge.svg)
@@ -40,11 +40,13 @@ cron_instance = Cron('*/10 9-17 1 * *', {
 ### Parse a cron string
 ```python
 # Every 10 mins between 9am and 5pm on the 1st of every month
-# In case of the second or third creation method this step is not required
+# In the case of the second or third creation method this step is not required
 cron_instance.from_string('*/10 9-17 1 * *')
 
 # Prints: '*/10 9-17 1 * *'
 print(cron_instance.to_string())
+# Alternatively, you could print directly the object obtaining the same result:
+# print(cron_instance) # Prints: '*/10 9-17 1 * *'
 
 # Prints:
 # [
@@ -93,8 +95,8 @@ print(cron_instance)
 # Parse a string to init a schedule
 cron_instance.from_string('*/5 * * * *')
 
-# Optionally, use a reference Date or moment object
-reference = datetime.now()  # Raw datetime without timezone info (not aware)
+# Raw datetime without timezone info (not aware)
+reference = datetime.now()
 # Get the iterator, initialised to now
 schedule = cron_instance.schedule(reference)
 
@@ -121,29 +123,37 @@ Be sure to init your cron-converter instance with a TZ aware datetime for this t
 
 Example using pytz:
 ```python
-    from pytz import timezone
-    from datetime import datetime
-    from cron_converter import Cron
+from pytz import timezone
+from datetime import datetime
+from cron_converter import Cron
 
-    tz = timezone("Europe/Rome")
-    local_date = tz.localize(datetime(2021, 1, 1))
-    cron = Cron('0 0 * * *')
-    next_schedule = cron.schedule(local_date).next()
-    # Prints: '2021-01-02T00:00:00+01:00'
-    print(next_schedule.isoformat())
+tz = timezone("Europe/Rome")
+local_date = tz.localize(datetime(2021, 1, 1))
+cron = Cron('0 0 * * *')
+schedule = cron.schedule(local_date)
+next_schedule = schedule.next()
+next_next_schedule = schedule.next()
+# Prints: '2021-01-01T00:00:00+01:00'
+print(next_schedule.isoformat())
+# Prints: '2021-01-02T00:00:00+01:00'
+print(next_next_schedule.isoformat())
 ```
 Example using python_dateutil:
 ```python
-    import dateutil.tz
-    from datetime import datetime
-    from cron_converter import Cron
+import dateutil.tz
+from datetime import datetime
+from cron_converter import Cron
 
-    tz = dateutil.tz.gettz('Asia/Tokyo')
-    local_date = datetime(2021, 1, 1, tzinfo=tz)
-    cron = Cron('0 0 * * *')
-    next_schedule = cron.schedule(local_date).next()
-    # Prints: '2021-01-02T00:00:00+09:00'
-    print(next_schedule.isoformat())
+tz = dateutil.tz.gettz('Asia/Tokyo')
+local_date = datetime(2021, 1, 1, tzinfo=tz)
+cron = Cron('0 0 * * *')
+schedule = cron.schedule(local_date)
+next_schedule = schedule.next()
+next_next_schedule = schedule.next()
+# Prints: '2021-01-01T00:00:00+09:00'
+print(next_schedule.isoformat())
+# Prints: '2021-01-02T00:00:00+09:00'
+print(next_next_schedule.isoformat())
 ```
 
 ## About seconds repeats

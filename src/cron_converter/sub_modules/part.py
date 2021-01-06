@@ -15,6 +15,7 @@ class Part:
         self.unit = unit
         self.values = None
 
+    """Print directly the Part Object"""
     def __str__(self):
         return self.to_string()
 

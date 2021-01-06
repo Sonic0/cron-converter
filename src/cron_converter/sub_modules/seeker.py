@@ -37,8 +37,7 @@ class Seeker:
         self.date = self.start_time
         self.pristine = True
 
-    """Resets the iterator
-    """
+    """Resets the iterator."""
     def reset(self) -> None:
         self.pristine = True
         self.date = self.start_time
@@ -52,7 +51,7 @@ class Seeker:
         if self.pristine:
             self.pristine = False
         else:
-            one_minute = timedelta(minutes=1)
+            one_minute = timedelta(minutes=+1)
             # Ensure next is never now
             self.date = self.date + one_minute
 

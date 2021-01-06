@@ -23,7 +23,6 @@ units = [
       'MAY', 'JUN', 'JUL', 'AUG',
       'SEP', 'OCT', 'NOV', 'DEC'
     ]
-    # TODO implement max last day of month ( 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 )
   },
   {
     "name": 'weekday',
