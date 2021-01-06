@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='cron-converter',
-    version='0.0.3',
+    version='0.1.0',
     license='MIT License',
     description='Cron string parser for Python',
     long_description=open('README.md').read(),
@@ -20,7 +20,7 @@ setup(
             'test': ['unittest'],
         },
     classifiers=[
-        'Development Status :: 2 - Pre-Alpha',
+        'Development Status :: 3 - Alpha',
         'Intended Audience :: Developers',
         'Intended Audience :: System Administrators',
         'License :: OSI Approved :: MIT License',

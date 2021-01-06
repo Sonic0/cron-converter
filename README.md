@@ -77,7 +77,7 @@ cron_instance = Cron(None, {
   'output_month_names': True
 })
 cron_instance.from_string('*/5 9-17/2 * 1-3 1-5')
-# Prints: '*/5 *(10-16)/2 * JAN-MAR MON-FRI'
+# Prints: '*/5 9-17/2 * JAN-MAR MON-FRI'
 print(cron_instance)
 ```
 or
@@ -86,7 +86,7 @@ cron_instance = Cron('*/5 9-17/2 * 1-3 1-5', {
   'output_weekday_names': True,
   'output_month_names': True
 })
-# Prints: '*/5 *(10-16)/2 * JAN-MAR MON-FRI'
+# Prints: '*/5 9-17/2 * JAN-MAR MON-FRI'
 print(cron_instance)
 ```
 
@@ -160,10 +160,17 @@ print(next_next_schedule.isoformat())
 Cron-converter is NOT able to do second repetition crontabs form.
 
 ## Develop & Tests
-
 ```bash
 git clone https://github.com/Sonic0/cron-converter
 cd cron-converter
 python -m unittest discover -s src/cron_converter/tests/unit
 python -m unittest discover -s src/cron_converter/tests/integration
+```
+
+### TODO
+```
+Cron day part string output in the form: 
+'*(10-16)/2' 
+instead of: 
+'9-17/2'
 ```
