@@ -343,7 +343,6 @@ class Part:
         return_value (string):The range as a string.
     """
     def to_string(self):
-        cron_part_str = ''
         cron_range_strings = []
         if self.is_full():
             if 'output_hashes' in self.options:
@@ -354,15 +353,15 @@ class Part:
             step = self.get_step()
             if step and self.is_interval(step):
                 if self.is_full_interval(step):
-                    # if 'output_hashes' in self.options:
-                    #     cron_part_str = f'H/{step}'
-                    # else:
-                    cron_part_str = f'*/{step}'
+                    if 'output_hashes' in self.options:
+                        cron_part_str = f'H/{step}'
+                    else:
+                        cron_part_str = f'*/{step}'
                 else:
-                    # if 'output_hashes' in self.options:
-                    #     cron_part_str = f'H({self.format_value(self.min())}-{self.format_value(self.max())})/{step}'
-                    # else:
-                    cron_part_str = f'{self.format_value(self.min())}-{self.format_value(self.max())}/{step}'
+                    if 'output_hashes' in self.options:
+                        cron_part_str = f'H({self.format_value(self.min())}-{self.format_value(self.max())})/{step}'
+                    else:
+                        cron_part_str = f'{self.format_value(self.min())}-{self.format_value(self.max())}/{step}'
             else:
                 cron_ranges = self.to_ranges()
                 for cron_range in cron_ranges:
@@ -372,7 +371,7 @@ class Part:
                     else:
                         cron_range_strings.append(f'{self.format_value(cron_range)}')
 
-                if cron_range_strings and len(cron_range_strings) > 1:
+                if isinstance(cron_range_strings, list) and cron_range_strings:
                     cron_part_str = ','.join(cron_range_strings)
                 else:
                     cron_part_str = cron_range_strings[0]

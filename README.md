@@ -68,9 +68,12 @@ print(cron_instance.to_string())
 ```
 
 ### Constructor options
+Possible options:
+- output_weekday_names: false (default)
+- output_month_mames: false (default)
+- output_hashes: false (default)
 
-##### outputWeekdayNames and outputMonthNames --> Default: false
-
+#### output_weekday_names and output_month_mames
 ```python
 cron_instance = Cron(None, {
   'output_weekday_names': True,
@@ -88,6 +91,15 @@ cron_instance = Cron('*/5 9-17/2 * 1-3 1-5', {
 })
 # Prints: '*/5 9-17/2 * JAN-MAR MON-FRI'
 print(cron_instance)
+```
+
+#### output_hashes
+```python
+cron_instance = Cron('*/5 9-17/2 * 1-3 1-5', {
+  'output_hashes': True
+})
+# Prints: 'H/5 H(9-17)/2 H 1-3 1-5'
+print(cron_instance.to_string())
 ```
 
 ### Get the schedule execution times. Example with raw Datetime
