@@ -178,11 +178,3 @@ cd cron-converter
 python -m unittest discover -s src/cron_converter/tests/unit
 python -m unittest discover -s src/cron_converter/tests/integration
 ```
-
-### TODO
-```
-Cron day part string output in the form: 
-'*(10-16)/2' 
-instead of: 
-'9-17/2'
-```
