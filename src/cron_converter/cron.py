@@ -21,6 +21,10 @@ class Cron:
         if cron_string:
             self.from_string(cron_string)
 
+    """Print directly the Cron Object"""
+    def __str__(self):
+        return self.to_string()
+
     """Parses a cron string.
     
     Args:
