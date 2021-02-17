@@ -139,7 +139,7 @@ from pytz import timezone
 from datetime import datetime
 from cron_converter import Cron
 
-tz = timezone("Europe/Rome")
+tz = timezone('Europe/Rome')
 local_date = tz.localize(datetime(2021, 1, 1))
 cron = Cron('0 0 * * *')
 schedule = cron.schedule(local_date)
