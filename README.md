@@ -175,6 +175,7 @@ Cron-converter is NOT able to do second repetition crontabs form.
 ```bash
 git clone https://github.com/Sonic0/cron-converter
 cd cron-converter
-python -m unittest discover -s src/cron_converter/tests/unit
-python -m unittest discover -s src/cron_converter/tests/integration
+...
+python -m unittest discover -s tests/unit
+python -m unittest discover -s tests/integration
 ```
