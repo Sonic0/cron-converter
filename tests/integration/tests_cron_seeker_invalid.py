@@ -1,7 +1,7 @@
 import unittest
 from datetime import datetime
 
-from src.cron_converter.cron import Cron
+from cron_converter.cron import Cron
 
 from fixtures.invalid_schedule_date import invalid_schedules
 

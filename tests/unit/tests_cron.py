@@ -1,6 +1,6 @@
 import unittest
 
-from src.cron_converter.cron import Cron
+from cron_converter.cron import Cron
 
 
 class CronTest(unittest.TestCase):

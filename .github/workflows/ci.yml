@@ -27,5 +27,5 @@ jobs:
 
       - name: Run tests with pytest
         run: |
-          python -m unittest discover -s src/cron_converter/tests/unit
-          python -m unittest discover -s src/cron_converter/tests/integration
+          python -m unittest discover -s tests/unit
+          python -m unittest discover -s tests/integration

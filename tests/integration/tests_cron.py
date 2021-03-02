@@ -1,6 +1,6 @@
 import unittest
 
-from src.cron_converter.cron import Cron
+from cron_converter.cron import Cron
 
 from fixtures.valid_crons import valid_crons_string, valid_crons_to_list, valid_crons_list
 

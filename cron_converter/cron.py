@@ -4,7 +4,7 @@ from .sub_modules.seeker import Seeker
 
 from datetime import datetime
 
-from typing import Optional
+from typing import Optional, List, Union
 
 
 class Cron:
@@ -21,16 +21,16 @@ class Cron:
         if cron_string:
             self.from_string(cron_string)
 
-    """Print directly the Cron Object"""
-    def __str__(self):
+    def __str__(self) -> str:
+        """Print directly the Cron Object"""
         return self.to_string()
 
-    """Parses a cron string.
-    
-    Args:
-        cron_string (str): The cron string to parse.    
-    """
     def from_string(self, cron_string: str) -> None:
+        """Parses a cron string (minutes - hours - days - months - weekday)
+
+        :param cron_string: (str) The cron string to parse. It has to be made up 5 parts.
+        :raises ValueError: Incorrect length of the cron string.
+        """
         if type(cron_string) != str:
             raise TypeError('Invalid cron string')
         self.parts = cron_string.strip().split()
@@ -44,22 +44,21 @@ class Cron:
 
         self.parts = cron_parts
 
-    """Return the cron schedule as a string.
-    
-    Returns:
-        cron string (str): The cron schedule as a string.
-    """
     def to_string(self) -> str:
+        """Return the cron schedule as a string.
+
+        :return: cron string (str) -> The cron schedule as a string.
+        """
         if not self.parts:
             raise LookupError('No schedule found')
         return ' '.join(str(part) for part in self.parts)
 
-    """Parses a 2-dimentional array of integers as a cron schedule.
-    
-    Args:
-        cron_list (list of list): The 2-dimensional list to parse
-    """
-    def from_list(self, cron_list):
+    def from_list(self, cron_list: List[List[Union[str, int]]]):
+        """Parses a 2-dimentional array of integers as a cron schedule.
+
+        :param cron_list: (list of list) The 2-dimensional list to parse.
+        :raises ValueError: Incorrect length of the cron list.
+        """
         cron_parts = []
         if len(cron_list) != 5:
             raise ValueError(f'Invalid cron list')
@@ -71,12 +70,12 @@ class Cron:
 
         self.parts = cron_parts
 
-    """Returns the cron schedule as a 2-dimentional list of integers
-    
-    Returns:
-        schedule_list (list of lists): The cron schedule as a list. 
-    """
-    def to_list(self):
+    def to_list(self) -> List[Part]:
+        """Returns the cron schedule as a 2-dimentional list of integers
+
+        :return: schedule_list -> The cron schedule as a list.
+        :raises LookupError: Empty Cron object.
+        """
         if not self.parts:
             raise LookupError('No schedule found')
         schedule_list = []
@@ -84,13 +83,10 @@ class Cron:
             schedule_list.append(part.to_list())
         return schedule_list
 
-    """Returns the time the schedule would run next.
-    
-    Args:
-        start_date Optional(datetime): A datetime object. If not provided, time now in utc
-    
-    Returns:
-        Seeker (Object): A schedule iterator.
-    """
-    def schedule(self, start_time: Optional[datetime] = None):
+    def schedule(self, start_time: Optional[datetime] = None) -> Seeker:
+        """Returns the time the schedule would run next.
+
+        :param start_time: A datetime object. If not provided, it will be now in utc.
+        :return: A schedule iterator.
+        """
         return Seeker(self, start_time)

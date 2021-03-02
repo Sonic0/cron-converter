@@ -10,9 +10,7 @@ setup(
     author='Andrea Salvatori',
     author_email='andrea.salvatori92@gmail.com',
     url='https://github.com/Sonic0/cron-converter',
-    package_dir={'': 'src'},
     packages=['cron_converter', 'cron_converter/sub_modules'],
-    # packages=find_packages(where='cron_converter', exclude=['tests*', '*.tests*']),
     keywords='cron',
     # install_requires=, # No requires
     include_package_data=True,
@@ -28,5 +26,5 @@ setup(
         'Programming Language :: Python :: 3 :: Only',
         'Topic :: Software Development :: Libraries :: Python Modules'
     ],
-    python_requires='>=3.8',
+    python_requires='>=3.6',
 )

@@ -1,6 +1,6 @@
 import unittest
-from src.cron_converter.sub_modules.part import Part
-from src.cron_converter.sub_modules.units import units
+from cron_converter.sub_modules.part import Part
+from cron_converter.sub_modules.units import units
 
 
 class PartTest(unittest.TestCase):
@@ -59,15 +59,15 @@ class PartTest(unittest.TestCase):
 
     def test_fix_sunday(self):
         part = Part(units[4], {})
-        result = part.fix_sunday([7])
+        result = part._fix_sunday([7])
         self.assertEqual(result, [0], 'Fail!')
 
     def test_parse_range(self):
         part = Part(units[4], {})
-        result = part.parse_range('0')
+        result = part._parse_range('0')
         self.assertEqual(result, [0], 'Fail parsing a non range string')
         # test SUN to FRI
-        result = part.parse_range('0-5')
+        result = part._parse_range('0-5')
         self.assertEqual(result, [0, 1, 2, 3, 4, 5], 'Fail parsing range')
 
     def test_parse_step(self):
@@ -76,9 +76,9 @@ class PartTest(unittest.TestCase):
 
     def test_apply_interval(self):
         part = Part(units[4], {})
-        result = part.apply_interval([2, 3, 4, 5, 6], 3)
+        result = part._apply_interval([2, 3, 4, 5, 6], 3)
         self.assertEqual(result, [2, 5])
 
     def test_replace_alternatives(self):
         part = Part(units[3], {})
-        self.assertEqual(part.replace_alternatives('sep'), '9', 'The correspondent number of month does not match')
+        self.assertEqual(part._replace_alternatives('sep'), '9', 'The correspondent number of month does not match')

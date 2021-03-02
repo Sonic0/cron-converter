@@ -1,6 +1,6 @@
 import unittest
-from src.cron_converter.sub_modules.part import Part
-from src.cron_converter.sub_modules.units import units
+from cron_converter.sub_modules.part import Part
+from cron_converter.sub_modules.units import units
 
 from fixtures.valid_ranges import valid_ranges
 
