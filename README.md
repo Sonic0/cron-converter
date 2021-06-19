@@ -168,6 +168,26 @@ print(next_schedule.isoformat())
 print(next_next_schedule.isoformat())
 ```
 
+## About Cron schedule times frequency
+It's possible to compare the Cron object schedules frequency. Thanks [@zevaverbach](https://github.com/zevaverbach).
+```python
+# Hours
+Cron('0 1 * * 1-5') == Cron('0 2 * * 1-5') # True
+Cron('0 1,2,3 * * 1-5') > Cron('0 1,23 * * 1-5') # True
+# Minutes
+Cron('* 1 * * 1-5') == Cron('0-59 1 * * 1-5') # True
+Cron('1-30 1 * * 1-5') > Cron('1-29 1 * * 1-5') # True
+# Days
+Cron('* 1 1 * 1-5') == Cron('0-59 1 2 * 1-5') # True
+Cron('* 1 1,2 * 1-5') > Cron('* 1 6 * 1-5') # True
+# Month
+Cron('* 1 1 11 1-5') == Cron('* 1 1 1 1-5') # True
+Cron('* 1 6 * 1-5') > Cron('* 1 6 1 1-5') # True
+# WeekDay
+Cron('* 1 1 11 *') == Cron('* 1 1 11 0-6') # True
+Cron('* 1 6 * 1-5') > Cron('* 1 6 * 1-4') # True
+```
+
 ## About seconds repeats
 Cron-converter is NOT able to do second repetition crontabs form.
 

@@ -1,6 +1,8 @@
+from functools import total_ordering
 from typing import List, Union
 
 
+@total_ordering
 class Part:
     """Creates an instance of Part.
 
@@ -21,6 +23,21 @@ class Part:
 
     def __repr__(self):
         return f'{self.__class__.__name__} - (values:{self.values!r}, unit:{self.unit.get("name")!r})'
+
+    def __len__(self):
+        return len(self.to_list())
+
+    def __lt__(self, other) -> bool:
+        """ This Part object is lower than the other Part.
+        The comparison is made by 'total_ordering', comparing self.values list.
+        """
+        return len(self) < len(other)
+
+    def __eq__(self, other) -> bool:
+        """ This Part object is equal to the other Part.
+        The comparison is made by 'total_ordering', comparing self.values list.
+        """
+        return len(self) == len(other)
 
     def from_list(self, part_list: List[Union[str, int]]) -> None:
         """Validates a range of positive integers.

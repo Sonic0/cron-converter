@@ -3,10 +3,12 @@ from .sub_modules.units import units
 from .sub_modules.seeker import Seeker
 
 from datetime import datetime
+from functools import total_ordering
 
 from typing import Optional, List, Union
 
 
+@total_ordering
 class Cron:
     """Creates an instance of Cron.
 
@@ -24,6 +26,23 @@ class Cron:
     def __str__(self) -> str:
         """Print directly the Cron Object"""
         return self.to_string()
+
+    def __lt__(self, other) -> bool:
+        """ This Cron object is lower than the other Cron.
+        The comparison is made by 'total_ordering' comparing the number of Cron schedule times.
+        """
+        reordered_parts = self.parts[:3] + [self.parts[4], self.parts[3]]
+        reordered_parts_other = other.parts[:3] + [other.parts[4], other.parts[3]]
+        for part, other_part in zip(reversed(reordered_parts), reversed(reordered_parts_other)):
+            if part < other_part:
+                return True
+        return False
+
+    def __eq__(self, other) -> bool:
+        """ This Cron object is equal to the other Cron.
+        The comparison is made by 'total_ordering' comparing the number of Cron schedule times.
+        """
+        return all(part == other_part for part, other_part in zip(self.parts, other.parts))
 
     def from_string(self, cron_string: str) -> None:
         """Parses a cron string (minutes - hours - days - months - weekday)
