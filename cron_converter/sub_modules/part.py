@@ -197,8 +197,8 @@ class Part:
         """
         if 'alt' in self.unit:
             string = string.upper()
-            for alt in self.unit.get('alt'):
-                string = string.replace(alt, str(self.unit.get("min") + self.unit.get("alt").index(alt)))
+            for idx, alt in enumerate(self.unit.get('alt')):
+                string = string.replace(alt, str(self.unit.get("min") + idx))
         return string
 
     def out_of_range(self, values: List[int]) -> Union[int, None]:
@@ -254,10 +254,10 @@ class Part:
 
         :param step: The difference between numbers in the interval.
         """
-        for value in self.values:
+        for idx, value in enumerate(self.values):
             if self.values[0] == value:
                 continue
-            prev_value = self.values[self.values.index(value) - 1]
+            prev_value = self.values[idx - 1]
             current_value = value
             if current_value - prev_value != step:
                 return False
@@ -299,10 +299,9 @@ class Part:
         """
         multi_dim_values = list()
         start_number = None
-        for value in self.values:
-            index = self.values.index(value)
+        for idx, value in enumerate(self.values):
             try:
-                next_value = self.values[index + 1]
+                next_value = self.values[idx + 1]
             except IndexError:
                 next_value = -1  # No next item in the self.values list
 
