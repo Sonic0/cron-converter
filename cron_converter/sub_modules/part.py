@@ -82,23 +82,22 @@ class Part:
         if not range_string:
             raise ValueError(f'Invalid value {range_string}')
         elif range_string == '*':
-            unit_range = list(range(self.unit.get('min'), self.unit.get('max') + 1))
-            parsed_values = [num for num in unit_range]
+            unit_range = self.possible_values()
         else:
             ranges_lists = []
             for hour_range in range_string.split(','):
                 ranges_lists.append(self._parse_range(hour_range))
             flattened_ranges_list = [item for sublist in ranges_lists for item in sublist]
             flattened_ranges_list = self._fix_sunday(flattened_ranges_list)
-            parsed_values = list(dict.fromkeys(flattened_ranges_list))  # Remove eventual duplicates
-            parsed_values.sort()
-            value = self.out_of_range(parsed_values)
+            unit_range = list(dict.fromkeys(flattened_ranges_list))  # Remove eventual duplicates
+            unit_range.sort()
+            value = self.out_of_range(unit_range)
             if value is not None:
                 raise ValueError(f'Value {value!r} out of range for {self.unit.get("name")!r}')
 
         step = self._get_step(string_parts)
 
-        interval_values = self._apply_interval(parsed_values, step)  # filter by step
+        interval_values = self._apply_interval(unit_range, step)  # filter by step
         if not len(interval_values):
             raise ValueError(f'Empty intervals value {cron_part}')
 
@@ -215,6 +214,13 @@ class Part:
             return last
         else:
             return None
+
+    def possible_values(self) -> List[int]:
+        """Creates a list of Part Unit possible values from 'min' to 'max'
+
+        :return: A List of Part Unit values
+        """
+        return list(range(self.unit.get('min'), self.unit.get('max') + 1))
 
     def min(self) -> int:
         """Returns the smallest value in the range.
