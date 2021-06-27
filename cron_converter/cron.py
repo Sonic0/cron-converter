@@ -61,7 +61,7 @@ class Cron:
             part.from_string(item)
             cron_parts.append(part)
 
-        self.parts = cron_parts
+        self.parts: List[Part] = cron_parts
 
     def to_string(self) -> str:
         """Return the cron schedule as a string.
@@ -89,7 +89,7 @@ class Cron:
 
         self.parts = cron_parts
 
-    def to_list(self) -> List[Part]:
+    def to_list(self) -> List[int]:
         """Returns the cron schedule as a 2-dimentional list of integers
 
         :return: schedule_list -> The cron schedule as a list.
