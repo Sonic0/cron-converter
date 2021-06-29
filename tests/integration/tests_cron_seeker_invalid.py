@@ -13,10 +13,3 @@ class SeekerTestInvalid(unittest.TestCase):
             cron.from_string(invalid_schedules[0]['schedule'])
             schedule = cron.schedule(datetime.fromisoformat(invalid_schedules[0]['now']))
             schedule.next()
-
-    def test_invalid_schedule(self):
-        with self.assertRaises(invalid_schedules[1]['error'], msg=invalid_schedules[1]['message']):
-            cron = Cron()
-            cron.from_string(invalid_schedules[1]['schedule'])
-            schedule = cron.schedule(invalid_schedules[1]['now'])
-            schedule.next()
