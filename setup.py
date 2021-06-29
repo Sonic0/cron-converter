@@ -12,7 +12,7 @@ setup(
     url='https://github.com/Sonic0/cron-converter',
     packages=['cron_converter', 'cron_converter/sub_modules'],
     keywords='cron',
-    # install_requires=, # No requires
+    install_requires=['python-dateutil'],  # No requires
     include_package_data=True,
     extras_require={
             'test': ['unittest'],
