@@ -133,6 +133,20 @@ print(schedule.prev().isoformat())
 ## About DST
 Be sure to init your cron-converter instance with a TZ aware datetime for this to work!
 
+A Scheduler has two optional mutually exclusive arguments: `start_date` or `timezone_str`. 
+By default (no parameters), a Scheduler start count with a UTC datetime ( _utcnow()_ ) if you not specify any `start_date` datetime object. 
+If you provide `timezone_str` the Scheduler will start count from a localized now datetime ( _datetime.now(tz_object)_ ). 
+
+Example starting from localized now datetime
+```python
+from cron_converter import Cron
+
+cron = Cron('0 0 * * *')
+schedule = cron.schedule(timezone_str='Europe/Rome')
+# Prints: result datetime + utc offset
+print(schedule.next())
+```
+
 Example using pytz:
 ```python
 from pytz import timezone
@@ -142,7 +156,7 @@ from cron_converter import Cron
 tz = timezone('Europe/Rome')
 local_date = tz.localize(datetime(2021, 1, 1))
 cron = Cron('0 0 * * *')
-schedule = cron.schedule(local_date)
+schedule = cron.schedule(start_date=local_date)
 next_schedule = schedule.next()
 next_next_schedule = schedule.next()
 # Prints: '2021-01-01T00:00:00+01:00'
@@ -159,7 +173,7 @@ from cron_converter import Cron
 tz = dateutil.tz.gettz('Asia/Tokyo')
 local_date = datetime(2021, 1, 1, tzinfo=tz)
 cron = Cron('0 0 * * *')
-schedule = cron.schedule(local_date)
+schedule = cron.schedule(start_date=local_date)
 next_schedule = schedule.next()
 next_next_schedule = schedule.next()
 # Prints: '2021-01-01T00:00:00+09:00'

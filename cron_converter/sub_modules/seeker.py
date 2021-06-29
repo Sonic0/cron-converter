@@ -1,4 +1,5 @@
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
+from dateutil import tz
 import calendar
 import copy
 from typing import Optional
@@ -16,17 +17,29 @@ class Seeker:
     """Create an instance of Seeker. Seeker objects search for execution times of a cron schedule.
     Args:
         cron (object): Cron object
-        start_time (datetime): The start time for the schedule iterator
+        start_date (datetime): The start date for the schedule iterator, with or without timezone.
+        timezone_str (str): The timezone to make an timezone aware datetime as response.
     """
-    def __init__(self, cron: 'Cron', start_time: Optional[datetime] = None) -> None:
+    def __init__(self, cron: 'Cron', start_date: Optional[datetime] = None, timezone_str: Optional[str] = None) -> None:
         if not cron.parts:
             raise LookupError('No schedule found')
 
-        if start_time and isinstance(start_time, datetime):
-            self.tz_info = start_time.tzinfo
-            self.date = start_time
+        if start_date is not None and timezone_str is not None:
+            raise ValueError("should have location_num or location_path, but not both")
+
+        if start_date:
+            # Construct the Seeker object from a past or a future date
+            try:
+                isinstance(start_date, datetime)
+                self.tz_info = start_date.tzinfo
+                self.date = start_date
+            except Exception as exc:
+                raise ValueError(f'Input schedule start time is not a valid datetime object. Error -> {exc}')
+        elif timezone_str and tz.gettz(timezone_str):
+            self.tz_info = tz.gettz(timezone_str)
+            self.date = datetime.now(self.tz_info)
         else:
-            raise ValueError('Input schedule start time is not a valid datetime object')
+            self.date = datetime.now(tz.tzutc())
 
         if self.date.second > 0:
             # Add a minute to the date to prevent returning dates in the past
@@ -34,7 +47,6 @@ class Seeker:
 
         self.start_time = self.date
         self.cron = cron
-        self.date = self.start_time
         self.pristine = True
 
     """Resets the iterator."""

@@ -136,3 +136,18 @@ valid_schedules = [
     'next_next': '2020-02-05T09:40:00'
   }
 ]
+
+valid_schedules_timezone = [
+  {
+    'schedule': '10 1 * 6 *',
+    'timezone': 'CEST'
+  },
+  {
+    'schedule': '10 1 * 6 *',
+    'timezone': 'Europe/Rome'
+  },
+  {
+    'schedule': '10 1 * 6 *',
+    'timezone': 'America/New_York'
+  }
+]

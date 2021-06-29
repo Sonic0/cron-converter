@@ -102,10 +102,13 @@ class Cron:
             schedule_list.append(part.to_list())
         return schedule_list
 
-    def schedule(self, start_time: Optional[datetime] = None) -> Seeker:
+    def schedule(self, start_date: Optional[datetime] = None, timezone_str: Optional[str] = None) -> Seeker:
         """Returns the time the schedule would run next.
 
-        :param start_time: A datetime object. If not provided, it will be now in utc.
+        :param start_date: Optional. A datetime object. If not provided, date will be now in UTC.
+                                     This param exclude 'timezone_str'.
+        :param timezone_str: Optional. A timezone str('Europe/Rome', 'America/New_York', ...). Date will be now, but localized.
+                                       If not provided, date will be now in UTC. This param exclude 'start_date'.
         :return: A schedule iterator.
         """
-        return Seeker(self, start_time)
+        return Seeker(self, start_date, timezone_str)
