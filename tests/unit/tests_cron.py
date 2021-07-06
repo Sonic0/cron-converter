@@ -21,6 +21,10 @@ class CronTest(unittest.TestCase):
         cron = Cron('*/5 9-17/2 * 1-3 1-5', {'output_hashes': True})
         self.assertEqual('H/5 H(9-17)/2 H 1-3 1-5', cron.to_string())
 
+    def test_to_string_equal_min_max_range(self):
+        cron = Cron('* * * * 1-1', {'output_weekday_names': True})
+        self.assertEqual('* * * * MON', cron.to_string())
+
     def test_eq_hour(self):
         self.assertEqual(Cron('0 1 * * 1-5'), Cron('0 2 * * 1-5'))
 

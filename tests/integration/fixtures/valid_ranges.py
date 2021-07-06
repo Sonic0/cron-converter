@@ -64,5 +64,11 @@ valid_ranges = [
         'arr': [0, 5, 6],
         'output': '0,5-6',
         'unit': 4
-    }
+    },
+    {
+        'input': '1-1',
+        'arr': [1],
+        'output': '1',
+        'unit': 4
+    },
 ]

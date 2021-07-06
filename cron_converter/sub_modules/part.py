@@ -84,9 +84,7 @@ class Part:
         elif range_string == '*':
             unit_range = self.possible_values()
         else:
-            ranges_lists = []
-            for hour_range in range_string.split(','):
-                ranges_lists.append(self._parse_range(hour_range))
+            ranges_lists = [self._parse_range(range_string_part) for range_string_part in range_string.split(',')]
             flattened_ranges_list = [item for sublist in ranges_lists for item in sublist]
             flattened_ranges_list = self._fix_sunday(flattened_ranges_list)
             unit_range = list(dict.fromkeys(flattened_ranges_list))  # Remove eventual duplicates
@@ -115,7 +113,7 @@ class Part:
 
     @staticmethod
     def _parse_range(unit_range: str):
-        """Parses an hour range string. Example "15-19"
+        """Parses a range string. Example "15-19"
 
         :param unit_range: The range string.
         :return: The resulting array.
@@ -136,7 +134,7 @@ class Part:
                 max_value = int(sub_parts[1])
             except ValueError as exc:
                 raise ValueError(f'Invalid min or max value from: {unit_range!r} --> {exc}')
-            if max_value <= min_value:
+            if max_value < min_value:
                 raise ValueError(f'Max range is less than min range in {unit_range}')
             return [int_value for int_value in range(min_value, max_value + 1)]
         else:
