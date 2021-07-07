@@ -59,6 +59,6 @@ class SeekerTest(unittest.TestCase):
                 cron = Cron()
                 cron.from_string(valid_schedule['schedule'])
                 schedule = cron.schedule(timezone_str=valid_schedule['timezone'])
-                logger.debug(f"Timezone -> {valid_schedule['timezone']}")
-                self.assertTrue(schedule.next().utcoffset().seconds == datetime.now(tz=tz.gettz(valid_schedule['timezone'])).utcoffset().seconds,
+                self.assertTrue(schedule.next().utcoffset().seconds ==
+                                datetime.now(tz=tz.gettz(valid_schedule['timezone'])).utcoffset().seconds,
                                 'Timezones does not match')

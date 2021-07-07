@@ -25,8 +25,7 @@ class Seeker:
             raise LookupError('No schedule found')
 
         if start_date is not None and timezone_str is not None:
-            raise ValueError("should have location_num or location_path, but not both")
-
+            raise ValueError('should have location_num or location_path, but not both')
         if start_date:
             # Construct the Seeker object from a past or a future date
             try:
@@ -35,9 +34,12 @@ class Seeker:
                 self.date = start_date
             except Exception as exc:
                 raise ValueError(f'Input schedule start time is not a valid datetime object. Error -> {exc}')
-        elif timezone_str and tz.gettz(timezone_str):
-            self.tz_info = tz.gettz(timezone_str)
-            self.date = datetime.now(self.tz_info)
+        elif timezone_str:
+            if tz.gettz(timezone_str):
+                self.tz_info = tz.gettz(timezone_str)
+                self.date = datetime.now(self.tz_info)
+            else:
+                raise ValueError(f'Provided not a valid Timezone --> {timezone_str}')
         else:
             self.date = datetime.now(tz.tzutc())
 
