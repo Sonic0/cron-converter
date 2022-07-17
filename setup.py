@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='cron-converter',
-    version='0.4.3',
+    version='0.5.0',
     license='MIT License',
     description='Cron string parser and scheduler for Python',
     long_description=open('README.md').read(),
@@ -12,7 +12,7 @@ setup(
     url='https://github.com/Sonic0/cron-converter',
     packages=['cron_converter', 'cron_converter/sub_modules'],
     keywords='cron',
-    install_requires=['python-dateutil'],  # No requires
+    install_requires=['python-dateutil'],
     include_package_data=True,
     extras_require={
             'test': ['unittest'],

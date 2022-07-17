@@ -74,32 +74,35 @@ class Part:
         :raises ValueError: Invalid value.
         :raises ValueError: An error occurred in case of invalid value or out of range value.
         """
-        string_parts = cron_part.split('/')  # Split in the case of step parameter
-        if len(string_parts) > 2:
-            raise ValueError(f'Invalid value {cron_part}')
+        total_interval_values = []  # Final list of list. Every sub-list will be a unit range
+        string_parts = cron_part.split(',')  # Split in the case of multiple unit ranges
+        for string_part in string_parts:
+            range_step_string_parts = string_part.split('/')  # Split in the case of step parameter
+            if len(range_step_string_parts) > 2:
+                raise ValueError(f'Invalid value {string_part!r} in cron part {cron_part!r}')
 
-        range_string = self._replace_alternatives(string_parts[0])
-        if not range_string:
-            raise ValueError(f'Invalid value {range_string}')
-        elif range_string == '*':
-            unit_range = self.possible_values()
-        else:
-            ranges_lists = [self._parse_range(range_string_part) for range_string_part in range_string.split(',')]
-            flattened_ranges_list = [item for sublist in ranges_lists for item in sublist]
-            flattened_ranges_list = self._fix_sunday(flattened_ranges_list)
-            unit_range = list(dict.fromkeys(flattened_ranges_list))  # Remove eventual duplicates
-            unit_range.sort()
-            value = self.out_of_range(unit_range)
-            if value is not None:
-                raise ValueError(f'Value {value!r} out of range for {self.unit.get("name")!r}')
+            range_string = self._replace_alternatives(range_step_string_parts[0])
+            if not range_string:
+                raise ValueError(f'Invalid value {range_string}')
+            elif range_string == '*':
+                unit_range = self.possible_values()
+            else:
+                range_list = self._parse_range(range_string)
+                unit_range = self._fix_sunday(range_list)
+                value = self.out_of_range(unit_range)
+                if value is not None:
+                    raise ValueError(f'Value {value!r} out of range for {self.unit.get("name")!r}')
+            step = self._get_step(range_step_string_parts)
 
-        step = self._get_step(string_parts)
+            interval_values = self._apply_interval(unit_range, step)  # filter by step
+            if not len(interval_values):
+                raise ValueError(f'Empty intervals value {cron_part}')
+            total_interval_values.append(interval_values)
 
-        interval_values = self._apply_interval(unit_range, step)  # filter by step
-        if not len(interval_values):
-            raise ValueError(f'Empty intervals value {cron_part}')
-
-        self.values = interval_values
+        flattened_ranges_list = [item for sublist in total_interval_values for item in sublist]
+        flattened_ranges_list = list(dict.fromkeys(flattened_ranges_list))  # Remove eventual duplicates
+        flattened_ranges_list.sort()
+        self.values = flattened_ranges_list
 
     def _fix_sunday(self, values: List[int]) -> List[int]:
         """Replaces all 7 with 0 as Sunday can be represented by both.
@@ -112,8 +115,8 @@ class Part:
         return values
 
     @staticmethod
-    def _parse_range(unit_range: str):
-        """Parses a range string. Example "15-19"
+    def _parse_range(unit_range: str) -> List[int]:
+        """Parses a range string. Example: input="15-19" output=[15, 16, 17, 18, 19]
 
         :param unit_range: The range string.
         :return: The resulting array.
@@ -140,15 +143,15 @@ class Part:
         else:
             raise ValueError(f'Invalid value {unit_range}')
 
-    def _get_step(self, string_parts: List[str]) -> Union[None, int]:
+    def _get_step(self, range_string_parts: List[str]) -> Union[None, int]:
         """Get the step part of the part string.
 
-        :param string_parts: the part string.
+        :param range_string_parts: the part string of the current range.
         :return step: parsed step.
-        :raise IndexError: The second index of the list does not exists. The step is not present.
+        :raise IndexError: The second index of the list does not exist. The step is not present.
         """
         try:
-            step = string_parts[1]
+            step = range_string_parts[1]
         except IndexError:
             step = None
 
