@@ -8,6 +8,10 @@ valid_crons_string = [
         'out': '0 0 1 1 0'
     },
     {
+        'in': '0 0 1 jan-oct/2 SUN',
+        'out': '0 0 1 1-9/2 0'
+    },
+    {
         'in': '0 0 1 1 0',
         'out': '0 0 1 1 0'
     },

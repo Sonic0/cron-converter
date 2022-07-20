@@ -74,32 +74,33 @@ class Part:
         :raises ValueError: Invalid value.
         :raises ValueError: An error occurred in case of invalid value or out of range value.
         """
-        total_interval_values = []  # Final list of list. Every sub-list will be a unit range
-        string_parts = cron_part.split(',')  # Split in the case of multiple unit ranges
+        intervals_values_list = []  # Final list of list. Every sub-list will be a unit range
+        # Split in the case of multiple unit ranges and replace months 'alt' with corresponding 'int' numbers
+        string_parts = self._replace_alternatives(cron_part).split(',')
         for string_part in string_parts:
-            range_step_string_parts = string_part.split('/')  # Split in the case of step parameter
+            # Split in the case of step parameter
+            range_step_string_parts = string_part.split('/')
             if len(range_step_string_parts) > 2:
                 raise ValueError(f'Invalid value {string_part!r} in cron part {cron_part!r}')
-
-            range_string = self._replace_alternatives(range_step_string_parts[0])
+            range_string = range_step_string_parts[0]
             if not range_string:
                 raise ValueError(f'Invalid value {range_string}')
             elif range_string == '*':
-                unit_range = self.possible_values()
+                range_list = self.possible_values()
             else:
                 range_list = self._parse_range(range_string)
-                unit_range = self._fix_sunday(range_list)
-                value = self.out_of_range(unit_range)
+                range_list = self._fix_sunday(range_list)
+                value = self.out_of_range(range_list)
                 if value is not None:
                     raise ValueError(f'Value {value!r} out of range for {self.unit.get("name")!r}')
             step = self._get_step(range_step_string_parts)
 
-            interval_values = self._apply_interval(unit_range, step)  # filter by step
+            interval_values = self._apply_interval(range_list, step)  # filter by step
             if not len(interval_values):
                 raise ValueError(f'Empty intervals value {cron_part}')
-            total_interval_values.append(interval_values)
+            intervals_values_list.append(interval_values)
 
-        flattened_ranges_list = [item for sublist in total_interval_values for item in sublist]
+        flattened_ranges_list = [item for sublist in intervals_values_list for item in sublist]
         flattened_ranges_list = list(dict.fromkeys(flattened_ranges_list))  # Remove eventual duplicates
         flattened_ranges_list.sort()
         self.values = flattened_ranges_list
@@ -190,7 +191,7 @@ class Part:
 
     def _replace_alternatives(self, string: str) -> str:
         """Replaces the alternative representations of numbers in a string.
-        Example -> month '12' will be 'DEC'
+        Example -> month 'dec' will be '12'
 
         :param string: The string to process.
         :return: The processed string.

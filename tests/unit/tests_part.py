@@ -81,4 +81,4 @@ class PartTest(unittest.TestCase):
 
     def test_replace_alternatives(self):
         part = Part(units[3], {})
-        self.assertEqual(part._replace_alternatives('sep'), '9', 'The correspondent number of month does not match')
+        self.assertEqual(part._replace_alternatives('sep-dec/2,jan-apr/2'), '9-12/2,1-4/2', 'Months as int do not match')
