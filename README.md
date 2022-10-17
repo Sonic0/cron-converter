@@ -70,10 +70,10 @@ print(cron_instance.to_string())
 ### Constructor options
 Possible options:
 - output_weekday_names: false (default)
-- output_month_mames: false (default)
+- output_month_names: false (default)
 - output_hashes: false (default)
 
-#### output_weekday_names and output_month_mames
+#### output_weekday_names and output_month_names
 ```python
 cron_instance = Cron(None, {
   'output_weekday_names': True,
