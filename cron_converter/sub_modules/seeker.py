@@ -10,8 +10,13 @@ if TYPE_CHECKING:
     from cron import Cron
     from sub_modules.part import Part
 
-weekdays = {'Sun': 0, 'Mon': 1, 'Tue': 2, 'Wed': 3, 'Thu': 4, 'Fri': 5, 'Sat': 6}  # en_US weekdays
 
+"""Converts ISO weekday numbers to cron weekday numbers.
+    ISO weekday numbers are Monday (1) to Sunday (7)
+    Cron weekday numbers are Sunday (0) to Saturday (6).
+"""
+def iso_to_cron_weekday(iso_weekday):
+    return iso_weekday % 7
 
 class Seeker:
     """Create an instance of Seeker. Seeker objects search for execution times of a cron schedule.
@@ -131,7 +136,7 @@ class Seeker:
     def _shift_day(self, cron_day_part: 'Part', cron_weekday_part: 'Part', operation: Literal['add', 'subtract']) -> bool:
         current_month = self.date.month
         while self.date.day not in cron_day_part.to_list() or \
-                weekdays.get(self.date.strftime("%a")) not in cron_weekday_part.to_list():
+                iso_to_cron_weekday(self.date.isoweekday()) not in cron_weekday_part.to_list():
             if operation == 'add':
                 self.date = self.date + timedelta(days=+1)
                 self.date = self.date.replace(hour=0, minute=0, second=0)
