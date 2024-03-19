@@ -1,11 +1,11 @@
-from .sub_modules.part import Part
-from .sub_modules.units import units
-from .sub_modules.seeker import Seeker
-
-from datetime import datetime
+from datetime import datetime, date
 from functools import total_ordering
-
 from typing import Optional, List, Union
+
+from .sub_modules.part import Part
+from .sub_modules.seeker import Seeker
+from .sub_modules.units import units
+from .sub_modules.utils import to_parts
 
 
 @total_ordering
@@ -112,3 +112,23 @@ class Cron:
         :return: A schedule iterator.
         """
         return Seeker(self, start_date, timezone_str)
+
+    def is_valid(self, date_time_obj: datetime | date) -> bool:
+        """Returns True if the object passed is within the Cron rule.
+
+        :param date_time_obj: A datetime or date object
+
+        :return: True if the object passed is within the Cron Rule.
+        """
+
+        valid = []
+        for cron_part, d_par in zip(self.parts, to_parts(date_time_obj)):
+            if d_par is not None:
+                valid.append(d_par in cron_part.to_list())
+            else:
+                valid.append(True)
+
+        return all(valid)
+
+    def __contains__(self, item: datetime | date) -> bool:
+        return self.is_valid(item)
