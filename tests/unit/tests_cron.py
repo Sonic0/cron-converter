@@ -74,6 +74,7 @@ class CronTest(unittest.TestCase):
         self.assertTrue(Cron('* * * * 1').is_valid(datetime(2024, 3, 19, 1, 9)))
         self.assertTrue(Cron('9 1 19 3 1').is_valid(datetime(2024, 3, 19, 1, 9)))
         self.assertTrue(Cron('* 1 19 3 1').is_valid(datetime(2024, 3, 19, 1, 55)))
+        self.assertTrue(Cron('*/5 9-17/2 * 1-3 1-5').is_valid(datetime(2024, 3, 19, 15, 55)))
 
     def test_date_object_in_cron(self):
         self.assertTrue((date.today()) in Cron('* * * * *'))
@@ -85,3 +86,4 @@ class CronTest(unittest.TestCase):
         self.assertTrue((date(2024, 3, 19)) in Cron('9 1 19 3 1'))
         self.assertTrue((datetime(2024, 3, 19, 1, 55)) in Cron('* 1 19 3 1'))
         self.assertFalse((datetime(2024, 4, 19, 1, 55)) in Cron('* 1 19 3 1'))
+        self.assertTrue((datetime(2024, 3, 19, 15, 55) in Cron('*/5 9-17/2 * 1-3 1-5')))
