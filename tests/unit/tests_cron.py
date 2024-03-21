@@ -65,16 +65,17 @@ class CronTest(unittest.TestCase):
         self.assertTrue(Cron('* 1 6 1 *') > Cron('* 1 6 1 1-5'))
 
     def test_datetime_is_valid_cron(self):
-        self.assertTrue(Cron('* * * * *').is_valid(datetime.now()))
-        self.assertTrue(Cron('10 * * * *').is_valid(datetime(2022, 1, 1, 9, 10)))
-        self.assertTrue(Cron('* 10 * * *').is_valid(datetime(2022, 1, 1, 10, 9)))
-        self.assertTrue(Cron('* * 10 * *').is_valid(datetime(2022, 1, 10, 1, 9)))
-        self.assertTrue(Cron('* * * 10 *').is_valid(datetime(2022, 10, 1, 1, 9)))
+        self.assertTrue(Cron('* * * * *').validate(datetime.now()))
+        self.assertTrue(Cron('10 * * * *').validate(datetime(2022, 1, 1, 9, 10)))
+        self.assertTrue(Cron('* 10 * * *').validate(datetime(2022, 1, 1, 10, 9)))
+        self.assertTrue(Cron('* * 10 * *').validate(datetime(2022, 1, 10, 1, 9)))
+        self.assertTrue(Cron('* * * 10 *').validate(datetime(2022, 10, 1, 1, 9)))
         # 2024-03-19 is a Tuesday
-        self.assertTrue(Cron('* * * * 1').is_valid(datetime(2024, 3, 19, 1, 9)))
-        self.assertTrue(Cron('9 1 19 3 1').is_valid(datetime(2024, 3, 19, 1, 9)))
-        self.assertTrue(Cron('* 1 19 3 1').is_valid(datetime(2024, 3, 19, 1, 55)))
-        self.assertTrue(Cron('*/5 9-17/2 * 1-3 1-5').is_valid(datetime(2024, 3, 19, 15, 55)))
+        self.assertTrue(Cron('* * * * 1').validate(datetime(2024, 3, 19, 1, 9)))
+        self.assertTrue(Cron('9 1 19 3 1').validate(datetime(2024, 3, 19, 1, 9)))
+        self.assertTrue(Cron('* 1 19 3 1').validate(datetime(2024, 3, 19, 1, 55)))
+        self.assertTrue(
+            Cron('*/5 9-17/2 * 1-3 1-5').validate(datetime(2024, 3, 19, 15, 55)))
 
     def test_date_object_in_cron(self):
         self.assertTrue((date.today()) in Cron('* * * * *'))

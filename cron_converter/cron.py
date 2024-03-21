@@ -44,6 +44,9 @@ class Cron:
         """
         return all(part == other_part for part, other_part in zip(self.parts, other.parts))
 
+    def __contains__(self, item: datetime | date) -> bool:
+        return self.validate(item)
+
     def from_string(self, cron_string: str) -> None:
         """Parses a cron string (minutes - hours - days - months - weekday)
 
@@ -113,7 +116,7 @@ class Cron:
         """
         return Seeker(self, start_date, timezone_str)
 
-    def is_valid(self, date_time_obj: datetime | date) -> bool:
+    def validate(self, date_time_obj: datetime | date) -> bool:
         """Returns True if the object passed is within the Cron rule.
 
         :param date_time_obj: A datetime or date object
@@ -129,6 +132,3 @@ class Cron:
                 valid.append(True)
 
         return all(valid)
-
-    def __contains__(self, item: datetime | date) -> bool:
-        return self.is_valid(item)
