@@ -205,6 +205,18 @@ Cron('* 1 6 * 1-5') > Cron('* 1 6 * 1-4') # True
 ## About seconds repeats
 Cron-converter is NOT able to do second repetition crontabs form.
 
+## About datetime objects validation
+Cron can also validate datetime objects (datetime and date).
+```python
+Cron("* * 10 * *").validate(datetime(2022, 1, 10, 1, 9)) # True
+Cron("* * 12 * *").validate(datetime(2022, 1, 10, 1, 9)) # False
+```
+
+A datetime object can also be validated with the `in` operator
+```python
+datetime(2024, 3, 19, 15, 55) in Cron('*/5 9-17/2 * 1-3 1-5') # True
+```
+
 ## Develop & Tests
 ```bash
 git clone https://github.com/Sonic0/cron-converter
