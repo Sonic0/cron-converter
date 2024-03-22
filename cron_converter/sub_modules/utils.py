@@ -1,7 +1,8 @@
 import datetime
+from typing import Union
 
 
-def to_parts(d: datetime.datetime | datetime.date) -> list[int | None]:
+def to_parts(d: Union[datetime.datetime, datetime.date]) -> list[Union[int, None]]:
     minute = None
     hour = None
     day = d.day
