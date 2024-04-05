@@ -1,31 +1,92 @@
-name: Unit and Integration tests
+name: CI # Continuous Integration
 on:
   push:
-    branches: [ main ]
+    branches:
+      - main
+    paths-ignore:
+      - "**.md"
   pull_request:
-    branches: [ main ]
+    paths-ignore:
+      - "**.md"
 
 jobs:
-  build:
+  tests:
+    name: Test Suite
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: [ '3.8', '3.9', '3.10', '3.11' ]
-
+        python-version: [ '3.8', '3.9', '3.10', '3.11', '3.12' ]
     steps:
-      - uses: actions/checkout@v4
-
+      - name: Checkout repository  
+        uses: actions/checkout@v4
       - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
-
       - name: Install dependencies
         run: |
           python3 -m pip install --upgrade pip
           python3 -m pip install -r requirements.txt
-
       - name: Run tests with pytest
         run: |
-          python -m unittest discover -s tests/unit
-          python -m unittest discover -s tests/integration
+          python -m unittest discover -v tests/unit
+          python -m unittest discover -v tests/integration
+
+  flake8:
+    name: Flake8
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Set up Python 3
+        uses: actions/setup-python@v5
+        with:
+          python-version: 3
+      - name: Lint with flake8
+        uses: py-actions/flake8@v2
+        with:
+          args: --count --show-source
+          path: "cron_converter"
+          plugins: "flake8-bugbear flake8-black"
+
+  isort:
+    name: Isort
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Set up Python 3
+        uses: actions/setup-python@v5
+        with:
+          python-version: 3
+      - name: Install dependencies
+        run: |
+          python3 -m pip install --upgrade pip
+          python3 -m pip install isort colorama
+      - name: Sort imports with isort
+        run: isort --diff --check --color --multi-line 3 --profile black .
+
+  mypy:
+    name: MyPy
+    runs-on: ubuntu-latest
+    steps:
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: 3
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Install mypy
+        run: |
+          python3 -m pip install --upgrade pip
+          python3 -m pip install mypy
+      - name: Get Python changed files
+        id: changed-py-files
+        uses: tj-actions/changed-files@v23
+        with:
+          files: |
+            *.py
+            **/*.py
+      - name: Run if any of the listed files above is changed
+        if: steps.changed-py-files.outputs.any_changed == 'true'
+        run: mypy ${{ steps.changed-py-files.outputs.all_changed_files }}
