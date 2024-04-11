@@ -29,3 +29,11 @@ test = ["unittest"]
 [project.urls]
 Homepage = "https://github.com/Sonic0/cron-converter"
 Issues = "https://github.com/Sonic0/cron-converter/issues"
+
+[tool.isort]
+profile = "black"
+src_paths = ["cron_converter", "tests"]
+multi_line_output = 3
+
+[tool.mypy]
+ignore_missing_imports = true
