@@ -26,7 +26,7 @@ jobs:
       - name: Install dependencies
         run: |
           python3 -m pip install --upgrade pip
-          python3 -m pip install -r requirements.txt
+          python3 -m pip install .[test]
       - name: Run tests with pytest
         run: |
           python -m unittest discover -v tests/unit
@@ -79,7 +79,7 @@ jobs:
       - name: Install mypy
         run: |
           python3 -m pip install --upgrade pip
-          python3 -m pip install mypy
+          python3 -m pip install .[mypy]
       - name: Get Python changed files
         id: changed-py-files
         uses: tj-actions/changed-files@v44

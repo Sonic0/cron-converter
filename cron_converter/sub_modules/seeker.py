@@ -5,17 +5,12 @@ from typing import TYPE_CHECKING, List, Literal, Optional
 
 from dateutil import tz
 
+from .utils import iso_to_cron_weekday
+
 if TYPE_CHECKING:
     from cron import Cron
     from sub_modules.part import Part
 
-
-"""Converts ISO weekday numbers to cron weekday numbers.
-    ISO weekday numbers are Monday (1) to Sunday (7)
-    Cron weekday numbers are Sunday (0) to Saturday (6).
-"""
-def iso_to_cron_weekday(iso_weekday):
-    return iso_weekday % 7
 
 class Seeker:
     """Create an instance of Seeker. Seeker objects search for execution times of a cron schedule.
@@ -61,7 +56,7 @@ class Seeker:
         self.date = self.start_time
 
     """Returns the time the schedule would run next.
-    
+
      Returns:
         (datetime): The time the schedule would run next.
     """
@@ -73,10 +68,10 @@ class Seeker:
             # Ensure next is never now
             self.date = self.date + one_minute
 
-        return self.find_date(getattr(self.cron, 'parts'))
+        return self.find_date(self.cron.parts)
 
     """Returns the time the schedule would have last run at.
-    
+
     Returns:
         (datetime): The time the schedule would have last run at.
     """
@@ -84,10 +79,10 @@ class Seeker:
         self.pristine = False
         # Ensure prev and next cannot be same time
         self.date = self.date + timedelta(minutes=-1)
-        return self.find_date(getattr(self.cron, 'parts'), True)
+        return self.find_date(self.cron.parts, True)
 
     """Returns the time the schedule would run next. # TODO refactor description.
-    
+
     Args:
         cron_parts (List): List of all cron 'Part'.
         reverse(boolean): Whether to find the previous value instead of next.
@@ -115,7 +110,7 @@ class Seeker:
         return copy.deepcopy(self.date.replace(second=0, microsecond=0))
 
     """Increments/decrements the month value of a date, until a month that matches the schedule is found.
-    
+
     Args:
         cron_month_part (Part): The month 'Part' object.
         operation (Literal['add', 'subtract']): The function to call on date: 'add' or 'subtract'.
@@ -132,7 +127,8 @@ class Seeker:
     Returns:
         (boolean): Whether the month of the date was changed.
     """
-    def _shift_day(self, cron_day_part: 'Part', cron_weekday_part: 'Part', operation: Literal['add', 'subtract']) -> bool:
+    def _shift_day(self, cron_day_part: 'Part', cron_weekday_part: 'Part', operation: Literal['add', 'subtract']) \
+            -> bool:
         current_month = self.date.month
         while self.date.day not in cron_day_part.to_list() or \
                 iso_to_cron_weekday(self.date.isoweekday()) not in cron_weekday_part.to_list():
@@ -190,7 +186,7 @@ class Seeker:
         return False
 
     """Static method to increment/decrement the month value of a datetime Object.
-    
+
     Args:
         date (datetime): Date Object it increments/decrements the month value to.
         months (int): Number of months to add at the provided input date Object

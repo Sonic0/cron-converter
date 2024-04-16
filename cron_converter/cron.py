@@ -17,9 +17,9 @@ class Cron:
     Attributes:
         options (dict): The options to use
     """
-    def __init__(self, cron_string: str = None, options=None):
+    def __init__(self, cron_string: Optional[str] = None, options=None):
         self.options = options if bool(options) else dict()
-        self.parts = None
+        self.parts: List[Part] = []
         if cron_string:
             self.from_string(cron_string)
 
@@ -53,18 +53,15 @@ class Cron:
         :param cron_string: (str) The cron string to parse. It has to be made up 5 parts.
         :raises ValueError: Incorrect length of the cron string.
         """
-        if type(cron_string) != str:
+        if type(cron_string) is not str:
             raise TypeError('Invalid cron string')
-        self.parts = cron_string.strip().split()
-        if len(self.parts) != 5:
+        raw_cron_parts = cron_string.strip().split()
+        if len(raw_cron_parts) != 5:
             raise ValueError("Invalid cron string format")
-        cron_parts = []
-        for item, unit in zip(self.parts, units):
+        for item, unit in zip(raw_cron_parts, units):
             part = Part(unit, self.options)
             part.from_string(item)
-            cron_parts.append(part)
-
-        self.parts: List[Part] = cron_parts
+            self.parts.append(part)
 
     def to_string(self) -> str:
         """Return the cron schedule as a string.
@@ -76,24 +73,21 @@ class Cron:
         return ' '.join(str(part) for part in self.parts)
 
     def from_list(self, cron_list: List[List[Union[str, int]]]):
-        """Parses a 2-dimentional array of integers as a cron schedule.
+        """Parses a 2-dimensional array of integers as a cron schedule.
 
         :param cron_list: (list of list) The 2-dimensional list to parse.
         :raises ValueError: Incorrect length of the cron list.
         """
-        cron_parts = []
         if len(cron_list) != 5:
-            raise ValueError(f'Invalid cron list')
+            raise ValueError('Invalid cron list')
 
         for cron_part_list, unit in zip(cron_list, units):
             part = Part(unit, self.options)
             part.from_list(cron_part_list)
-            cron_parts.append(part)
-
-        self.parts = cron_parts
+            self.parts.append(part)
 
     def to_list(self) -> List[List[int]]:
-        """Returns the cron schedule as a 2-dimentional list of integers
+        """Returns the cron schedule as a 2-dimensional list of integers
 
         :return: schedule_list -> The cron schedule as a list.
         :raises LookupError: Empty Cron object.
@@ -110,7 +104,8 @@ class Cron:
 
         :param start_date: Optional. A datetime object. If not provided, date will be now in UTC.
                                      This param exclude 'timezone_str'.
-        :param timezone_str: Optional. A timezone str('Europe/Rome', 'America/New_York', ...). Date will be now, but localized.
+        :param timezone_str: Optional. A timezone str('Europe/Rome', 'America/New_York', ...).
+                                       Date will be now, but localized.
                                        If not provided, date will be now in UTC. This param exclude 'start_date'.
         :return: A schedule iterator.
         """

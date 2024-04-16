@@ -15,7 +15,7 @@ class Part:
     def __init__(self, unit, options):
         self.options = options if bool(options) else dict()
         self.unit = unit
-        self.values = None
+        self.values: List[int] = []
 
     def __str__(self) -> str:
         """Print directly the Part Object"""
@@ -61,9 +61,9 @@ class Part:
         sunday_fixed_values = self._fix_sunday(values)
         unique_values = list(dict.fromkeys(sunday_fixed_values))  # Remove eventual duplicates
         unique_values.sort()
-        part_value = self.out_of_range(unique_values)
-        if part_value is not None:
-            raise ValueError(f'Value {part_value!r} out of range for {self.unit.get("name")!r}')
+        out_of_range_value = self.out_of_range(unique_values)
+        if out_of_range_value is not None:
+            raise ValueError(f'Value {out_of_range_value!r} out of range for {self.unit.get("name")!r}')
 
         self.values = unique_values
 
@@ -81,7 +81,7 @@ class Part:
             # Split in the case of step parameter
             range_step_string_parts = string_part.split('/')
             if len(range_step_string_parts) > 2:
-                raise ValueError(f'Invalid value {string_part!r} in cron part {cron_part!r}')
+                raise ValueError(f"Invalid value {string_part!r} in cron part {cron_part!r}")
             range_string = range_step_string_parts[0]
             if not range_string:
                 raise ValueError(f'Invalid value {string_part!r} for {self.unit.get("name")!r}')
@@ -95,10 +95,13 @@ class Part:
                     raise ValueError(f'Value {value!r} out of range for {self.unit.get("name")!r}')
             step = self._get_step(range_step_string_parts)
 
-            interval_values = self._apply_interval(range_list, step)  # filter by step
-            if not len(interval_values):
-                raise ValueError(f'Empty intervals value {cron_part}')
-            intervals_values_list.append(interval_values)
+            if step is not None:
+                interval_values = self._apply_interval(range_list, step)  # filter by step
+                if not len(interval_values):
+                    raise ValueError(f'Empty intervals value {cron_part}')
+                intervals_values_list.append(interval_values)
+            else:  # either no step value found or step value not valid
+                intervals_values_list.append(range_list)
 
         flattened_ranges_list = [item for sublist in intervals_values_list for item in sublist]
         flattened_ranges_list = list(dict.fromkeys(flattened_ranges_list))  # Remove eventual duplicates
@@ -151,14 +154,14 @@ class Part:
         :raise IndexError: The second index of the list does not exist. The step is not present.
         """
         try:
-            step = range_string_parts[1]
+            step_str = range_string_parts[1]
         except IndexError:
-            step = None
+            return None
 
-        if step or step == '':
-            step = self._parse_step(step)
+        if step_str or step_str == '':
+            return self._parse_step(step_str)
 
-        return step
+        return None
 
     def _parse_step(self, step: str) -> int:
         """Parses the step from a part string.
@@ -202,7 +205,7 @@ class Part:
         return string
 
     def out_of_range(self, values: List[int]) -> Union[int, None]:
-        """Finds an element from values that is outside of the range of self.unit
+        """Finds an element from values that is outside the range of self.unit
 
         :param values: The values to test.
         :return: An integer is a value out of range was found, otherwise None.
@@ -253,8 +256,7 @@ class Part:
             step = self.values[1] - self.values[0]
             if step > 1:
                 return step
-        else:
-            return None
+        return None
 
     def is_interval(self, step: int) -> bool:
         """Returns true if the range can be represented as an interval.
@@ -299,10 +301,10 @@ class Part:
         """
         return self.values
 
-    def to_ranges(self) -> List[List[Union[str, int]]]:
+    def to_ranges(self) -> Union[List[int], List[List[Union[int]]]]:
         """Returns the range as an array of ranges defined as arrays of positive integers.
 
-        :return: multi_dim_values (list of list): The range as a multi-dimensional array.
+        :return: multi_dim_values (list of list): The range as a multidimensional array.
         """
         multi_dim_values = list()
         start_number = None

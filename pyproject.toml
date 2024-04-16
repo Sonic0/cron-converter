@@ -21,10 +21,16 @@ classifiers = [
     "Operating System :: OS Independent",
     "Topic :: Software Development :: Libraries :: Python Modules"
 ]
-dependencies = ["python-dateutil"]
+dependencies = [
+    "python-dateutil"
+]
 
 [project.optional-dependencies]
-test = ["unittest"]
+test = ["python-dateutil"]
+mypy = [
+    "mypy",
+    "types-python-dateutil"
+]
 
 [project.urls]
 Homepage = "https://github.com/Sonic0/cron-converter"
