@@ -1,8 +1,9 @@
 import unittest
-from cron_converter.sub_modules.part import Part
-from cron_converter.sub_modules.units import units
 
 from fixtures.invalid_ranges import invalid_ranges
+
+from cron_converter.sub_modules.part import Part
+from cron_converter.sub_modules.units import units
 
 
 class PartTestInvalid(unittest.TestCase):

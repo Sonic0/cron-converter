@@ -82,7 +82,7 @@ jobs:
           python3 -m pip install mypy
       - name: Get Python changed files
         id: changed-py-files
-        uses: tj-actions/changed-files@v23
+        uses: tj-actions/changed-files@v44
         with:
           files: |
             *.py

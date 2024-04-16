@@ -1,6 +1,6 @@
-from datetime import datetime, date
+from datetime import date, datetime
 from functools import total_ordering
-from typing import Optional, List, Union
+from typing import List, Optional, Union
 
 from .sub_modules.part import Part
 from .sub_modules.seeker import Seeker
