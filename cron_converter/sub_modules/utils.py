@@ -1,5 +1,5 @@
 import datetime
-from typing import Union, List
+from typing import List, Union
 
 
 def to_parts(d: Union[datetime.datetime, datetime.date]) -> List[Union[int, None]]:

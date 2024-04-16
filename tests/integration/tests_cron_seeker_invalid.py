@@ -1,9 +1,9 @@
 import unittest
 from datetime import datetime
 
-from cron_converter.cron import Cron
-
 from fixtures.invalid_schedule_date import invalid_schedules
+
+from cron_converter.cron import Cron
 
 
 class SeekerTestInvalid(unittest.TestCase):

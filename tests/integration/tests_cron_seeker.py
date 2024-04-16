@@ -1,13 +1,12 @@
-import unittest
-from datetime import datetime
-from dateutil import tz
 import logging
 import sys
+import unittest
+from datetime import datetime
+
+from dateutil import tz
+from fixtures.valid_schedule_date import valid_schedules, valid_schedules_timezone
 
 from cron_converter.cron import Cron
-
-from fixtures.valid_schedule_date import valid_schedules
-from fixtures.valid_schedule_date import valid_schedules_timezone
 
 logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
 logger = logging.getLogger("TestLog")
