@@ -20,6 +20,8 @@ class PartTest(unittest.TestCase):
         self.assertEqual(part.get_step(), 3, "The result has to be 3")
         part.values = [1, 6, 11]
         self.assertEqual(part.get_step(), 5, "The result has to be 5")
+        part.values = [1, 2, 3, 4, 5, 6]
+        self.assertIsNone(part.get_step(), "The result has to be None")
 
     def test_is_interval(self):
         part = Part(units[0], {})
