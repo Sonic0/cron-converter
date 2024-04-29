@@ -84,7 +84,7 @@ class Part:
                 raise ValueError(f'Invalid value {string_part!r} in cron part {cron_part!r}')
             range_string = range_step_string_parts[0]
             if not range_string:
-                raise ValueError(f'Invalid value {range_string}')
+                raise ValueError(f'Invalid value {string_part!r} for {self.unit.get("name")!r}')
             elif range_string == '*':
                 range_list = self.possible_values()
             else:
@@ -115,8 +115,7 @@ class Part:
             values = [0 if value == 7 else value for value in values]
         return values
 
-    @staticmethod
-    def _parse_range(unit_range: str) -> List[int]:
+    def _parse_range(self, unit_range: str) -> List[int]:
         """Parses a range string. Example: input="15-19" output=[15, 16, 17, 18, 19]
 
         :param unit_range: The range string.
@@ -139,7 +138,7 @@ class Part:
             except ValueError as exc:
                 raise ValueError(f'Invalid min or max value from: {unit_range!r} --> {exc}')
             if max_value < min_value:
-                raise ValueError(f'Max range is less than min range in {unit_range}')
+                raise ValueError(f'Max range is less than min range in {unit_range!r} for {self.unit.get("name")!r}')
             return [int_value for int_value in range(min_value, max_value + 1)]
         else:
             raise ValueError(f'Invalid value {unit_range}')
