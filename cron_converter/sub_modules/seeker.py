@@ -17,7 +17,7 @@ class Seeker:
     Args:
         cron (object): Cron object
         start_date (datetime): The start date for the schedule iterator, with or without timezone.
-        timezone_str (str): The timezone to make an timezone aware datetime as response.
+        timezone_str (str): The timezone to make a timezone aware datetime as response.
     """
     def __init__(self, cron: 'Cron', start_date: Optional[datetime] = None, timezone_str: Optional[str] = None) -> None:
         if not cron.parts:
@@ -42,11 +42,11 @@ class Seeker:
         else:
             self.date = datetime.now(tz.tzutc())
 
-        if self.date.second > 0:
+        self.start_time = self.date
+        if self.date.second > 0 or self.date.microsecond > 0:
             # Add a minute to the date to prevent returning dates in the past
             self.date = self.date + timedelta(minutes=+1)
 
-        self.start_time = self.date
         self.cron = cron
         self.pristine = True
 
@@ -177,10 +177,10 @@ class Seeker:
         while self.date.minute not in cron_minute_part.to_list():
             if operation == 'add':
                 self.date = self.date + timedelta(minutes=+1)
-                self.date = self.date.replace(second=0)
+                self.date = self.date.replace(second=0, microsecond=0)
             else:
                 self.date = self.date + timedelta(minutes=-1)
-                self.date = self.date.replace(second=59)
+                self.date = self.date.replace(second=59, microsecond=0)
             if current_hour != self.date.hour:
                 return True
         return False

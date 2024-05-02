@@ -31,7 +31,7 @@ class SeekerTest(unittest.TestCase):
                 schedule = cron.schedule(datetime.fromisoformat(valid_schedule['now']))
                 schedule.prev()
                 self.assertEqual(schedule.prev().isoformat(), valid_schedule['prev_prev'],
-                                 'Failed seeking the next schedule date')
+                                 'Failed seeking the prev prev schedule date')
 
     def test_next(self):
         for valid_schedule in valid_schedules:
@@ -50,7 +50,7 @@ class SeekerTest(unittest.TestCase):
                 schedule = cron.schedule(datetime.fromisoformat(valid_schedule['now']))
                 schedule.next()
                 self.assertEqual(schedule.next().isoformat(), valid_schedule['next_next'],
-                                 'Failed seeking the next schedule date')
+                                 'Failed seeking the next next schedule date')
 
     def test_timezone(self):
         for valid_schedule in valid_schedules_timezone:
