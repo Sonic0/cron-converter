@@ -7,7 +7,7 @@ def to_parts(d: Union[datetime.datetime, datetime.date]) -> List[Union[int, None
     hour = None
     day = d.day
     month = d.month
-    dayofweek = d.weekday()
+    dayofweek = iso_to_cron_weekday(d.isoweekday())
 
     if isinstance(d, datetime.datetime):
         minute = d.minute
