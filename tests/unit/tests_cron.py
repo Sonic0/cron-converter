@@ -71,11 +71,13 @@ class CronTest(unittest.TestCase):
         self.assertTrue(Cron('* * 10 * *').validate(datetime(2022, 1, 10, 1, 9)))
         self.assertTrue(Cron('* * * 10 *').validate(datetime(2022, 10, 1, 1, 9)))
         # 2024-03-19 is a Tuesday
-        self.assertTrue(Cron('* * * * 1').validate(datetime(2024, 3, 19, 1, 9)))
-        self.assertTrue(Cron('9 1 19 3 1').validate(datetime(2024, 3, 19, 1, 9)))
-        self.assertTrue(Cron('* 1 19 3 1').validate(datetime(2024, 3, 19, 1, 55)))
+        self.assertTrue(Cron('* * * * 2').validate(datetime(2024, 3, 19, 1, 9)))
+        self.assertTrue(Cron('9 1 19 3 2').validate(datetime(2024, 3, 19, 1, 9)))
+        self.assertTrue(Cron('* 1 19 3 2').validate(datetime(2024, 3, 19, 1, 55)))
         self.assertTrue(
             Cron('*/5 9-17/2 * 1-3 1-5').validate(datetime(2024, 3, 19, 15, 55)))
+        # 2024-03-24 is a Sunday
+        self.assertTrue(Cron('* * * * 0').validate(datetime(2024, 3, 24, 1, 9)))
 
     def test_date_object_in_cron(self):
         self.assertTrue((date.today()) in Cron('* * * * *'))
@@ -83,8 +85,8 @@ class CronTest(unittest.TestCase):
         self.assertFalse((datetime(2022, 1, 1)) in Cron('10 * * * *'))
         self.assertTrue(date(2022, 1, 1) in (Cron('* 10 * * *')))
         # 2024-03-19 is a Tuesday
-        self.assertTrue((date(2024, 3, 19)) in Cron('* * * * 1'))
-        self.assertTrue((date(2024, 3, 19)) in Cron('9 1 19 3 1'))
-        self.assertTrue((datetime(2024, 3, 19, 1, 55)) in Cron('* 1 19 3 1'))
-        self.assertFalse((datetime(2024, 4, 19, 1, 55)) in Cron('* 1 19 3 1'))
+        self.assertTrue((date(2024, 3, 19)) in Cron('* * * * 2'))
+        self.assertTrue((date(2024, 3, 19)) in Cron('9 1 19 3 2'))
+        self.assertTrue((datetime(2024, 3, 19, 1, 55)) in Cron('* 1 19 3 2'))
+        self.assertFalse((datetime(2024, 4, 19, 1, 55)) in Cron('* 1 19 3 2'))
         self.assertTrue((datetime(2024, 3, 19, 15, 55) in Cron('*/5 9-17/2 * 1-3 1-5')))
