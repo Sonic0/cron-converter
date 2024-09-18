@@ -2,7 +2,7 @@ import unittest
 
 from pydantic import BaseModel
 
-from cron_converter import CronType, Cron
+from cron_converter import Cron, CronType
 
 
 class PartTestInvalid(unittest.TestCase):

@@ -1,7 +1,7 @@
 import sys
 from datetime import date, datetime
 from functools import total_ordering
-from typing import List, Optional, Union, TypeAlias, Annotated
+from typing import Annotated, List, Optional, Union
 
 from .sub_modules.part import Part
 from .sub_modules.seeker import Seeker
@@ -138,7 +138,7 @@ if sys.modules.get('pydantic', None):
     from pydantic import GetPydanticSchema
     from pydantic_core import core_schema
 
-    CronType: TypeAlias = Annotated[
+    CronType = Annotated[
         str,
         GetPydanticSchema(
             lambda tp, handler: core_schema.no_info_after_validator_function(
