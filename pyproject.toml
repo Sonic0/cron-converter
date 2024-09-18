@@ -6,7 +6,7 @@ build-backend = "setuptools.build_meta"
 name = "cron-converter"
 version = "1.2.1"
 authors = [
-    { name = "Andrea Salvatori", email = "16443598+Sonic0@users.noreply.github.com " },
+  { name="Andrea Salvatori", email="16443598+Sonic0@users.noreply.github.com " },
 ]
 description = "Cron string parser and scheduler for Python"
 readme = "README.md"
