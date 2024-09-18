@@ -2,8 +2,10 @@
   <img src="https://raw.githubusercontent.com/Sonic0/cron-converter/main/logo.png" title="Cron-converter">
 </p>
 
-Cron-converter provides a Cron string parser ( from string/lists to string/lists ) and iteration for the datetime object with a cron like format.<br>
-This project would be a transposition in Python of JS [cron-converter](https://github.com/roccivic/cron-converter) by [roccivic](https://github.com/roccivic). 
+Cron-converter provides a Cron string parser ( from string/lists to string/lists ) and iteration for the datetime object
+with a cron like format.<br>
+This project would be a transposition in Python of JS [cron-converter](https://github.com/roccivic/cron-converter)
+by [roccivic](https://github.com/roccivic).
 
 [![MIT License Badge](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/Sonic0/cron-converter/blob/master/LICENCE)
 ![Unit and Integration tests](https://github.com/Sonic0/cron-converter/workflows/Unit%20and%20Integration%20tests/badge.svg)
@@ -12,32 +14,40 @@ This project would be a transposition in Python of JS [cron-converter](https://g
 ## Install
 
 #### Pip
+
 ```bash
 pip install cron-converter
 ```
 
 ## Use
+
 ```python
 from cron_converter import Cron
 ```
 
 ### Create a new instance
+
 ```python
 cron_instance = Cron()
 ```
+
 or
+
 ```python
 cron_instance = Cron('*/10 9-17 1 * *')
 ```
+
 or (with constructor options)
+
 ```python
 cron_instance = Cron('*/10 9-17 1 * *', {
-  'output_weekday_names': True,
-  'output_month_names': True
+    'output_weekday_names': True,
+    'output_month_names': True
 })
 ```
 
 ### Parse a cron string
+
 ```python
 # Every 10 mins between 9am and 5pm on the 1st of every month
 # In the case of the second or third creation method this step is not required
@@ -60,49 +70,57 @@ print(cron_instance.to_list())
 ```
 
 ### Parse an Array
+
 ```python
-cron_instance.from_list([[0], [1], [1], [5], [0,2,4,6]])
+cron_instance.from_list([[0], [1], [1], [5], [0, 2, 4, 6]])
 
 # Prints: '0 1 1 5 */2'
 print(cron_instance.to_string())
 ```
 
 ### Constructor options
+
 Possible options:
+
 - output_weekday_names: false (default)
 - output_month_names: false (default)
 - output_hashes: false (default)
 
 #### output_weekday_names and output_month_names
+
 ```python
 cron_instance = Cron(None, {
-  'output_weekday_names': True,
-  'output_month_names': True
+    'output_weekday_names': True,
+    'output_month_names': True
 })
 cron_instance.from_string('*/5 9-17/2 * 1-3 1-5')
 # Prints: '*/5 9-17/2 * JAN-MAR MON-FRI'
 print(cron_instance)
 ```
+
 or
+
 ```python
 cron_instance = Cron('*/5 9-17/2 * 1-3 1-5', {
-  'output_weekday_names': True,
-  'output_month_names': True
+    'output_weekday_names': True,
+    'output_month_names': True
 })
 # Prints: '*/5 9-17/2 * JAN-MAR MON-FRI'
 print(cron_instance)
 ```
 
 #### output_hashes
+
 ```python
 cron_instance = Cron('*/5 9-17/2 * 1-3 1-5', {
-  'output_hashes': True
+    'output_hashes': True
 })
 # Prints: 'H/5 H(9-17)/2 H 1-3 1-5'
 print(cron_instance.to_string())
 ```
 
 ### Get the schedule execution times. Example with raw Datetime
+
 ```python
 # Parse a string to init a schedule
 cron_instance.from_string('*/5 * * * *')
@@ -131,13 +149,17 @@ print(schedule.prev().isoformat())
 ```
 
 ## About DST
+
 Be sure to init your cron-converter instance with a TZ aware datetime for this to work!
 
-A Scheduler has two optional mutually exclusive arguments: `start_date` or `timezone_str`. 
-By default (no parameters), a Scheduler start count with a UTC datetime ( _utcnow()_ ) if you not specify any `start_date` datetime object. 
-If you provide `timezone_str` the Scheduler will start count from a localized now datetime ( _datetime.now(tz_object)_ ). 
+A Scheduler has two optional mutually exclusive arguments: `start_date` or `timezone_str`.
+By default (no parameters), a Scheduler start count with a UTC datetime ( _utcnow()_ ) if you not specify any
+`start_date` datetime object.
+If you provide `timezone_str` the Scheduler will start count from a localized now datetime ( _datetime.now(
+tz_object)_ ).
 
 Example starting from localized now datetime
+
 ```python
 from cron_converter import Cron
 
@@ -148,6 +170,7 @@ print(schedule.next())
 ```
 
 Example using pytz:
+
 ```python
 from pytz import timezone
 from datetime import datetime
@@ -164,7 +187,9 @@ print(next_schedule.isoformat())
 # Prints: '2021-01-02T00:00:00+01:00'
 print(next_next_schedule.isoformat())
 ```
+
 Example using python_dateutil:
+
 ```python
 import dateutil.tz
 from datetime import datetime
@@ -183,41 +208,48 @@ print(next_next_schedule.isoformat())
 ```
 
 ## About Cron schedule times frequency
+
 It's possible to compare the Cron object schedules frequency. Thanks [@zevaverbach](https://github.com/zevaverbach).
+
 ```python
 # Hours
-Cron('0 1 * * 1-5') == Cron('0 2 * * 1-5') # True
-Cron('0 1,2,3 * * 1-5') > Cron('0 1,23 * * 1-5') # True
+Cron('0 1 * * 1-5') == Cron('0 2 * * 1-5')  # True
+Cron('0 1,2,3 * * 1-5') > Cron('0 1,23 * * 1-5')  # True
 # Minutes
-Cron('* 1 * * 1-5') == Cron('0-59 1 * * 1-5') # True
-Cron('1-30 1 * * 1-5') > Cron('1-29 1 * * 1-5') # True
+Cron('* 1 * * 1-5') == Cron('0-59 1 * * 1-5')  # True
+Cron('1-30 1 * * 1-5') > Cron('1-29 1 * * 1-5')  # True
 # Days
-Cron('* 1 1 * 1-5') == Cron('0-59 1 2 * 1-5') # True
-Cron('* 1 1,2 * 1-5') > Cron('* 1 6 * 1-5') # True
+Cron('* 1 1 * 1-5') == Cron('0-59 1 2 * 1-5')  # True
+Cron('* 1 1,2 * 1-5') > Cron('* 1 6 * 1-5')  # True
 # Month
-Cron('* 1 1 11 1-5') == Cron('* 1 1 1 1-5') # True
-Cron('* 1 6 * 1-5') > Cron('* 1 6 1 1-5') # True
+Cron('* 1 1 11 1-5') == Cron('* 1 1 1 1-5')  # True
+Cron('* 1 6 * 1-5') > Cron('* 1 6 1 1-5')  # True
 # WeekDay
-Cron('* 1 1 11 *') == Cron('* 1 1 11 0-6') # True
-Cron('* 1 6 * 1-5') > Cron('* 1 6 * 1-4') # True
+Cron('* 1 1 11 *') == Cron('* 1 1 11 0-6')  # True
+Cron('* 1 6 * 1-5') > Cron('* 1 6 * 1-4')  # True
 ```
 
 ## About seconds repeats
+
 Cron-converter is NOT able to do second repetition crontabs form.
 
 ## About datetime objects validation
+
 Cron can also validate datetime objects (datetime and date).
+
 ```python
-Cron("* * 10 * *").validate(datetime(2022, 1, 10, 1, 9)) # True
-Cron("* * 12 * *").validate(datetime(2022, 1, 10, 1, 9)) # False
+Cron("* * 10 * *").validate(datetime(2022, 1, 10, 1, 9))  # True
+Cron("* * 12 * *").validate(datetime(2022, 1, 10, 1, 9))  # False
 ```
 
 A datetime object can also be validated with the `in` operator
+
 ```python
-datetime(2024, 3, 19, 15, 55) in Cron('*/5 9-17/2 * 1-3 1-5') # True
+datetime(2024, 3, 19, 15, 55) in Cron('*/5 9-17/2 * 1-3 1-5')  # True
 ```
 
 ## Develop & Tests
+
 ```bash
 git clone https://github.com/Sonic0/cron-converter
 cd cron-converter
@@ -226,7 +258,26 @@ python -m unittest discover -s tests/unit
 python -m unittest discover -s tests/integration
 ```
 
+## Pydantic Integration
+
+cron-converter also provides `CronType`, which is a Pydantic-compatible type.
+
+```pycon
+>>> from pydantic import BaseModel
+... from cron_converter import CronType
+...
+... class CustomModel(BaseModel):
+...     cron: CronType
+... 
+... model = CustomModel(cron='* * * * *')
+
+>>> model.cron
+Cron('* * * * *')
+
+```
+
 ## Project info
+
 This repo is part of a projects group, called _Cron-Converter_.
 Its related repositories:
 

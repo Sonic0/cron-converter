@@ -1,6 +1,7 @@
+import sys
 from datetime import date, datetime
 from functools import total_ordering
-from typing import List, Optional, Union
+from typing import List, Optional, Union, TypeAlias, Annotated
 
 from .sub_modules.part import Part
 from .sub_modules.seeker import Seeker
@@ -17,6 +18,7 @@ class Cron:
     Attributes:
         options (dict): The options to use
     """
+
     def __init__(self, cron_string: Optional[str] = None, options=None):
         self.options = options if bool(options) else dict()
         self.parts: List[Part] = []
@@ -26,6 +28,9 @@ class Cron:
     def __str__(self) -> str:
         """Print directly the Cron Object"""
         return self.to_string()
+
+    def __repr__(self) -> str:
+        return f"Cron({str(self)!r})"
 
     def __lt__(self, other) -> bool:
         """ This Cron object is lower than the other Cron.
@@ -127,3 +132,17 @@ class Cron:
                 valid.append(True)
 
         return all(valid)
+
+
+if sys.modules.get('pydantic', None):
+    from pydantic import GetPydanticSchema
+    from pydantic_core import core_schema
+
+    CronType: TypeAlias = Annotated[
+        str,
+        GetPydanticSchema(
+            lambda tp, handler: core_schema.no_info_after_validator_function(
+                lambda x: Cron(x), handler(tp)
+            )
+        ),
+    ]
