@@ -226,6 +226,24 @@ python -m unittest discover -s tests/unit
 python -m unittest discover -s tests/integration
 ```
 
+## Pydantic Integration
+
+cron-converter also provides `CronType`, which is a Pydantic-compatible type.
+
+```pycon
+>>> from pydantic import BaseModel
+... from cron_converter import CronType
+...
+... class CustomModel(BaseModel):
+...     cron: CronType
+... 
+... model = CustomModel(cron='* * * * *')
+
+>>> model.cron
+Cron('* * * * *')
+
+```
+
 ## Project info
 This repo is part of a projects group, called _Cron-Converter_.
 Its related repositories:
