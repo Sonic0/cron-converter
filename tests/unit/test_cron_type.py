@@ -5,7 +5,7 @@ from pydantic import BaseModel
 from cron_converter import Cron, CronType
 
 
-class PartTestInvalid(unittest.TestCase):
+class TestPydanticModel(unittest.TestCase):
     def test_valid_class(self):
         class Model(BaseModel):
             cron: CronType
