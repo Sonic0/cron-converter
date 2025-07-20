@@ -27,19 +27,19 @@ class Part:
     def __len__(self):
         return len(self.to_list())
 
-    def __lt__(self, other: 'Part') -> type[ValueError] | bool:
+    def __lt__(self, other: 'Part') -> Union[bool, ValueError]:
         """This Part object is lower than the other Part."""
         if not isinstance(other, Part):
-            return ValueError
+            return ValueError("The comparing object is not a 'Part'")
         return self.unit.get("name") == other.unit.get("name") and len(self) < len(other)
 
-    def __eq__(self, other: 'Part') -> type[ValueError] | bool:
+    def __eq__(self, other: 'Part') -> Union[bool, ValueError]:
         """This Part object is equal to the other Part."""
         if not isinstance(other, Part):
-            return ValueError
-        return (self.unit.get("name") == other.unit.get("name") and
-                len(self) == len(other) and
-                all(value == other_value for value, other_value in zip(self.values, other.values)))
+            return ValueError("The comparing object is not a 'Part'")
+        return (self.unit.get("name") == other.unit.get("name")
+                and len(self) == len(other)
+                and all(value == other_value for value, other_value in zip(self.values, other.values)))
 
     def from_list(self, part_list: List[Union[str, int]]) -> None:
         """Validates a range of positive integers.
