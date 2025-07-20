@@ -42,6 +42,8 @@ class Cron:
         """ This Cron object is equal to the other Cron.
         The comparison is made by 'total_ordering' comparing the number of Cron schedule times.
         """
+        if not isinstance(other, Cron):
+            return NotImplemented
         return all(part == other_part for part, other_part in zip(self.parts, other.parts))
 
     def __contains__(self, item: Union[datetime, date]) -> bool:

@@ -27,7 +27,7 @@ class CronTest(unittest.TestCase):
         self.assertEqual('* * * * MON', cron.to_string())
 
     def test_eq_hour(self):
-        self.assertEqual(Cron('0 1 * * 1-5'), Cron('0 2 * * 1-5'))
+        self.assertEqual(Cron('0 2 * * 1-5'), Cron('0 2 * * 1-5'))
 
     def test_gt_hour(self):
         self.assertTrue(Cron('0 1,15 * * 1-5') > Cron('0 2 * * 1-5'))
@@ -35,22 +35,23 @@ class CronTest(unittest.TestCase):
         self.assertTrue(Cron('0 1,2,3 * * 1-5') > Cron('0 1,23 * * 1-5'))
 
     def test_eq_minute(self):
-        self.assertEqual(Cron('* 1 * * 1-5'), Cron('0-59 1 * * 1-5'))
-        self.assertEqual(Cron('* 1 * * 1-5'), Cron('* 1 * * 1-5'))
-        self.assertEqual(Cron('23 1 * * 1-5'), Cron('32 1 * * 1-5'))
+        cron1 = Cron('32 * * * *')
+        cron2 = Cron('33 * * * *')
+        self.assertNotEqual(cron1, cron2, f"{cron1.parts[0].to_string()} should not equal {cron2.parts[0].to_string()}")
+        self.assertEqual(Cron('0,15,30,45 * * * *'), Cron('0,15,30,45 * * * *'))
 
     def test_gt_minute(self):
         self.assertTrue(Cron('1-30 1 * * 1-5') > Cron('1-29 1 * * 1-5'))
         self.assertTrue(Cron('* 1 * * 1-5') > Cron('0-58 1 * * 1-5'))
 
     def test_eq_day(self):
-        self.assertEqual(Cron('* 1 1 * 1-5'), Cron('0-59 1 2 * 1-5'))
+        self.assertEqual(Cron('* 1 2 * 1-5'), Cron('0-59 1 2 * 1-5'))
 
     def test_gt_day(self):
         self.assertTrue(Cron('* 1 1,2 * 1-5') > Cron('* 1 6 * 1-5'))
 
     def test_eq_month(self):
-        self.assertEqual(Cron('* 1 1 11 1-5'), Cron('* 1 1 1 1-5'))
+        self.assertEqual(Cron('* 1 1 11 1-5'), Cron('* 1 1 11 1-5'))
 
     def test_gt_month(self):
         self.assertTrue(Cron('* 1 6 * 1-5') > Cron('* 1 6 1 1-5'))
@@ -58,7 +59,7 @@ class CronTest(unittest.TestCase):
 
     def test_eq_weekday(self):
         self.assertEqual(Cron('* 1 1 11 *'), Cron('* 1 1 11 0-6'))
-        self.assertEqual(Cron('* 1 1 11 1'), Cron('* 1 1 11 5'))
+        self.assertEqual(Cron('* 1 1 11 5'), Cron('* 1 1 11 5'))
 
     def test_gt_weekday(self):
         self.assertTrue(Cron('* 1 6 * 1-5') > Cron('* 1 6 * 1-4'))
