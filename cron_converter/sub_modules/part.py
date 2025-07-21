@@ -27,16 +27,16 @@ class Part:
     def __len__(self):
         return len(self.to_list())
 
-    def __lt__(self, other: 'Part') -> Union[bool, ValueError]:
+    def __lt__(self, other) -> bool:
         """This Part object is lower than the other Part."""
         if not isinstance(other, Part):
-            return ValueError("The comparing object is not a 'Part'")
+            return NotImplemented
         return self.unit.get("name") == other.unit.get("name") and len(self) < len(other)
 
-    def __eq__(self, other: 'Part') -> Union[bool, ValueError]:
+    def __eq__(self, other) -> bool:
         """This Part object is equal to the other Part."""
         if not isinstance(other, Part):
-            return ValueError("The comparing object is not a 'Part'")
+            return NotImplemented
         return (self.unit.get("name") == other.unit.get("name")
                 and len(self) == len(other)
                 and all(value == other_value for value, other_value in zip(self.values, other.values)))

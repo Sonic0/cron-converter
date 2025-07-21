@@ -26,7 +26,10 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-test = ["python-dateutil"]
+test = [
+    "pytest",
+    "python-dateutil"
+]
 mypy = [
     "mypy",
     "types-python-dateutil"
