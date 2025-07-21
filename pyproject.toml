@@ -20,7 +20,7 @@ classifiers = [
     "Operating System :: OS Independent",
     "Topic :: Software Development :: Libraries :: Python Modules"
 ]
-license = "MIT"
+license = {text = "MIT"} # Deprecated format. Remove after removing Python3.8 support
 dependencies = [
     "python-dateutil"
 ]
