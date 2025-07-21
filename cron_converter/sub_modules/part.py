@@ -28,16 +28,18 @@ class Part:
         return len(self.to_list())
 
     def __lt__(self, other) -> bool:
-        """ This Part object is lower than the other Part.
-        The comparison is made by 'total_ordering', comparing self.values list.
-        """
-        return len(self) < len(other)
+        """This Part object is lower than the other Part."""
+        if not isinstance(other, Part):
+            return NotImplemented
+        return self.unit.get("name") == other.unit.get("name") and len(self) < len(other)
 
     def __eq__(self, other) -> bool:
-        """ This Part object is equal to the other Part.
-        The comparison is made by 'total_ordering', comparing self.values list.
-        """
-        return len(self) == len(other)
+        """This Part object is equal to the other Part."""
+        if not isinstance(other, Part):
+            return NotImplemented
+        return (self.unit.get("name") == other.unit.get("name")
+                and len(self) == len(other)
+                and all(value == other_value for value, other_value in zip(self.values, other.values)))
 
     def from_list(self, part_list: List[Union[str, int]]) -> None:
         """Validates a range of positive integers.

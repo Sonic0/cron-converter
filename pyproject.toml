@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "cron-converter"
-version = "1.2.1"
+version = "1.2.2"
 authors = [
   { name="Andrea Salvatori", email="16443598+Sonic0@users.noreply.github.com " },
 ]
@@ -15,18 +15,21 @@ classifiers = [
     "Development Status :: 5 - Production/Stable",
     "Intended Audience :: Developers",
     "Intended Audience :: System Administrators",
-    "License :: OSI Approved :: MIT License",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3 :: Only",
     "Operating System :: OS Independent",
     "Topic :: Software Development :: Libraries :: Python Modules"
 ]
+license = {text = "MIT"} # Deprecated format. Remove after removing Python3.8 support
 dependencies = [
     "python-dateutil"
 ]
 
 [project.optional-dependencies]
-test = ["python-dateutil"]
+test = [
+    "pytest",
+    "python-dateutil"
+]
 mypy = [
     "mypy",
     "types-python-dateutil"

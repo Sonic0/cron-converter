@@ -31,6 +31,8 @@ class Cron:
         """ This Cron object is lower than the other Cron.
         The comparison is made by 'total_ordering' comparing the number of Cron schedule times.
         """
+        if not isinstance(other, Cron):
+            return NotImplemented
         reordered_parts = self.parts[:3] + [self.parts[4], self.parts[3]]
         reordered_parts_other = other.parts[:3] + [other.parts[4], other.parts[3]]
         for part, other_part in zip(reversed(reordered_parts), reversed(reordered_parts_other)):
@@ -42,6 +44,8 @@ class Cron:
         """ This Cron object is equal to the other Cron.
         The comparison is made by 'total_ordering' comparing the number of Cron schedule times.
         """
+        if not isinstance(other, Cron):
+            return NotImplemented
         return all(part == other_part for part, other_part in zip(self.parts, other.parts))
 
     def __contains__(self, item: Union[datetime, date]) -> bool:
