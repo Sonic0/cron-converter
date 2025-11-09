@@ -58,6 +58,16 @@ class SeekerTest(unittest.TestCase):
                 cron = Cron()
                 cron.from_string(valid_schedule['schedule'])
                 schedule = cron.schedule(timezone_str=valid_schedule['timezone'])
-                self.assertTrue(schedule.next().utcoffset().seconds ==
-                                datetime.now(tz=tz.gettz(valid_schedule['timezone'])).utcoffset().seconds,
-                                'Timezones does not match')
+                next_run = schedule.next()
+
+                self.assertIsNotNone(next_run.tzinfo,
+                                   f'Scheduled datetime should have timezone info for {valid_schedule["timezone"]}')
+
+                expected_tz = tz.gettz(valid_schedule['timezone'])
+                self.assertEqual(str(next_run.tzinfo), str(expected_tz),
+                               f'Timezone name does not match for {valid_schedule["timezone"]}')
+
+                reference_dt = datetime(next_run.year, next_run.month, next_run.day,
+                                       next_run.hour, next_run.minute, 0, 0, tzinfo=expected_tz)
+                self.assertEqual(next_run.utcoffset(), reference_dt.utcoffset(),
+                               f'UTC offset does not match for {valid_schedule["timezone"]} at {next_run}')
