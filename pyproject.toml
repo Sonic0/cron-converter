@@ -48,3 +48,10 @@ multi_line_output = 3
 ignore_missing_imports = true
 show_error_codes = true
 exclude = ['build/*', 'docs/*', 'examples/*', 'tests/*']
+
+
+[tool.setuptools]
+include-package-data = true
+
+[tool.setuptools.package-data]
+cron_converter = ["py.typed"]
