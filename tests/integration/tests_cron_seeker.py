@@ -71,3 +71,39 @@ class SeekerTest(unittest.TestCase):
                                        next_run.hour, next_run.minute, 0, 0, tzinfo=expected_tz)
                 self.assertEqual(next_run.utcoffset(), reference_dt.utcoffset(),
                                f'UTC offset does not match for {valid_schedule["timezone"]} at {next_run}')
+
+
+class TestIteratorProtocol(unittest.TestCase):
+    """Tests for Iterator protocol support"""
+
+    def test_iter_builtin(self):
+        """Verify iter() works"""
+        cron = Cron('*/5 * * * *')
+        schedule = cron.schedule(datetime(2025, 1, 1, 10, 0))
+        self.assertIs(iter(schedule), schedule)
+
+    def test_next_builtin(self):
+        """Verify next() works"""
+        for valid_schedule in valid_schedules[:3]:
+            with self.subTest(schedule=valid_schedule['schedule']):
+                cron = Cron()
+                cron.from_string(valid_schedule['schedule'])
+                schedule = cron.schedule(datetime.fromisoformat(valid_schedule['now']))
+
+                # builtin next() works
+                dt = next(schedule)
+                self.assertIsInstance(dt, datetime)
+
+    def test_islice_iteration(self):
+        """Verify islice() works"""
+        from itertools import islice
+
+        cron = Cron('*/5 * * * *')
+        schedule = cron.schedule(datetime(2025, 1, 1, 10, 0))
+
+        dates = list(islice(schedule, 10))
+        self.assertEqual(len(dates), 10)
+
+        # All of them have to be datetime
+        for dt in dates:
+            self.assertIsInstance(dt, datetime)
