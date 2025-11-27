@@ -1,1 +1,1 @@
-from .cron import Cron
+from .cron import Cron as Cron
