@@ -1,7 +1,7 @@
 import calendar
 import copy
 from datetime import datetime, timedelta
-from typing import TYPE_CHECKING, List, Literal, Optional, Iterator
+from typing import TYPE_CHECKING, Iterator, List, Literal, Optional
 
 from dateutil import tz
 
