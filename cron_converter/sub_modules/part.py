@@ -10,7 +10,7 @@ class Part:
 
     Attributes:
         unit (dict): The unit of measurement of time (see units.py).
-        options (dict): The options to use: output_weekday_names and output_month_names
+        options (dict): Optional dictionary of formatting options: output_weekday_names and output_month_names
     """
     def __init__(self, unit, options):
         self.options = options if bool(options) else dict()
@@ -303,13 +303,13 @@ class Part:
         """
         return self.values
 
-    def to_ranges(self) -> Union[List[int], List[List[Union[int]]]]:
+    def to_ranges(self) -> List[Union[int, List[int]]]:
         """Returns the range as an array of ranges defined as arrays of positive integers.
 
         :return: multi_dim_values (list of list): The range as a multidimensional array.
         """
-        multi_dim_values = list()
-        start_number = None
+        multi_dim_values: List[Union[int, List[int]]] = []
+        start_number: Union[int, None] = None
         for idx, value in enumerate(self.values):
             try:
                 next_value = self.values[idx + 1]
