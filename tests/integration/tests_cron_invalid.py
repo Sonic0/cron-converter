@@ -1,8 +1,7 @@
 import unittest
 
-from fixtures.invalid_crons import invalid_crons
-
 from cron_converter.cron import Cron
+from tests.integration.fixtures.invalid_crons import invalid_crons
 
 
 class CronTestInvalid(unittest.TestCase):

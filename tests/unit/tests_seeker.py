@@ -16,9 +16,18 @@ class SeekerTest(unittest.TestCase):
     def test_reset(self):
         cron = Cron('* * * * *')
         seeker = Seeker(cron, datetime(2023, 1, 3, 15, 17, 0))
-        self.assertEqual(datetime(2023, 1, 3, 15, 17, ), seeker.next())
+        # next() is exclusive by default: it never returns the start minute itself.
         self.assertEqual(datetime(2023, 1, 3, 15, 18, ), seeker.next())
-        self.assertEqual(datetime(2023, 1, 3, 15, 19,), seeker.next())
+        self.assertEqual(datetime(2023, 1, 3, 15, 19, ), seeker.next())
+        self.assertEqual(datetime(2023, 1, 3, 15, 20,), seeker.next())
         seeker.reset()
         self.assertEqual(datetime(2023, 1, 3, 15, 17), seeker.start_time)
-        self.assertEqual(datetime(2023, 1, 3, 15, 17), seeker.next())
+        self.assertEqual(datetime(2023, 1, 3, 15, 18), seeker.next())
+
+    def test_next_inclusive(self):
+        cron = Cron('* * * * *')
+        seeker = Seeker(cron, datetime(2023, 1, 3, 15, 17, 0))
+        # inclusive=True returns the start minute when it matches the schedule.
+        self.assertEqual(datetime(2023, 1, 3, 15, 17), seeker.next(inclusive=True))
+        # Subsequent calls remain exclusive.
+        self.assertEqual(datetime(2023, 1, 3, 15, 18), seeker.next())
