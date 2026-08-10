@@ -10,6 +10,10 @@ class CronTest(unittest.TestCase):
         cron = Cron('*/5 9-17/2 * 1-3 1-5')
         self.assertEqual('*/5 9-17/2 * 1-3 1-5', cron.to_string())
 
+    def test_to_string_from_minute(self):
+        cron = Cron('30/5 9-17/2 * 1-3 1-5')
+        self.assertEqual('30/5 9-17/2 * 1-3 1-5', cron.to_string())
+
     def test_to_string_output_weekday_names(self):
         cron = Cron('*/5 9-17/2 * 1-3 1-5', {'output_weekday_names': True})
         self.assertEqual('*/5 9-17/2 * 1-3 MON-FRI', cron.to_string())
