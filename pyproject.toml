@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "cron-converter"
-version = "2.0.0"
+version = "2.0.1"
 authors = [
     { name = "Andrea Salvatori", email = "16443598+Sonic0@users.noreply.github.com " },
 ]
@@ -47,3 +47,7 @@ include-package-data = true
 
 [tool.setuptools.package-data]
 cron_converter = ["py.typed"]
+
+[tool.setuptools.packages.find]
+include = ["cron_converter*"]
+namespaces = false

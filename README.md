@@ -232,7 +232,7 @@ parameter is not reachable through the iterator protocol (`next(schedule)`,
 all_dates = list(schedule)
 
 # Do this - always limit iteration
-dates = list(islice(schedule, 100))  # Limit with islice
+dates = list(islice(schedule, 100))
 # or
 dates = [dt for dt in schedule if dt.year < 2025]  # Limit with condition
 ```
@@ -344,13 +344,3 @@ cd cron-converter
 python -m unittest discover -s tests/unit
 python -m unittest discover -s tests/integration
 ```
-
-## Project info
-
-This repo is part of a projects group, called _Cron-Converter_.
-Its related repositories:
-
-- [local-crontab](https://github.com/Sonic0/local-crontab)
-- [local-crontab-ansible-filter](https://github.com/Sonic0/local-crontab-ansible-filter)
-- [local-crontab-serverless-infrastructure](https://github.com/Sonic0/local-crontab-serverless-infrastructure)
-- [local-crontab-web-converter](https://github.com/Sonic0/local-crontab-web-converter)
