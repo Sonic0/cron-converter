@@ -1,12 +1,11 @@
 import unittest
 
-from fixtures.valid_crons import (
+from cron_converter.cron import Cron
+from tests.integration.fixtures.valid_crons import (
     valid_crons_list,
     valid_crons_string,
     valid_crons_to_list,
 )
-
-from cron_converter.cron import Cron
 
 
 class CronTest(unittest.TestCase):

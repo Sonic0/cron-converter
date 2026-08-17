@@ -196,6 +196,35 @@ schedule.reset()          # Back to start
 dt4 = next(schedule)      # 10:15 again
 ```
 
+#### Exclusive and inclusive next()
+
+`.next()` is *exclusive*: the datetime it returns is always strictly after the start date,
+or after the value returned by the previous call. In the example above the start date is
+`10:00`, which is itself a scheduled minute, so the first `.next()` skips it and returns
+`10:15`.
+
+Pass `inclusive=True` when you want to know whether a run is due *at or after* a given
+moment, and a start date landing exactly on a scheduled minute should count:
+
+```python
+schedule = Cron('0 12 * * *').schedule(datetime(2021, 1, 1, 12, 0))
+
+schedule.next(inclusive=True)   # 2021-01-01T12:00:00 - the start minute itself
+schedule.next()                 # 2021-01-02T12:00:00 - the following occurrence
+```
+
+`inclusive` only affects the first call on a new or freshly `reset()` schedule; every
+later call is exclusive regardless. A start date carrying seconds or microseconds never
+sits exactly on a scheduled minute, so `inclusive` makes no difference there. The
+parameter is not reachable through the iterator protocol (`next(schedule)`,
+`islice(schedule, n)`), which is always exclusive.
+
+> **Migrating from 1.x** — before 2.0.0 `.next()` was inclusive on that first call, so a
+> start date falling exactly on a scheduled minute returned that same minute. The shift is
+> one full cron period: on `0 12 * * *` starting at `2021-01-01 12:00`, 1.x returned
+> `2021-01-01T12:00:00` where 2.0.0 returns `2021-01-02T12:00:00`. Add `inclusive=True` to
+> the first call to keep the 1.x results.
+
 #### Warning: Avoiding Infinite Loops
 
 ```python

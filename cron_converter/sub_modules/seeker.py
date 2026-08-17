@@ -43,7 +43,11 @@ class Seeker(Iterator[datetime]):
             self.date = datetime.now(tz.tzutc())
 
         self.start_time = self.date
-        if self.date.second > 0 or self.date.microsecond > 0:
+        # Whether the start date carried sub-minute precision. When it does, the date is
+        # rolled forward to the next whole minute below, so the start minute has already
+        # been left behind and the first exclusive next() must NOT advance again.
+        self._start_had_subminute = self.date.second > 0 or self.date.microsecond > 0
+        if self._start_had_subminute:
             # Add a minute to the date to prevent returning dates in the past
             self.date = self.date + timedelta(minutes=+1)
 
@@ -51,9 +55,11 @@ class Seeker(Iterator[datetime]):
         self.pristine = True
 
     def reset(self) -> None:
-        """Resets the iterator."""
+        """Resets the iterator back to its original start date."""
         self.pristine = True
         self.date = self.start_time
+        if self._start_had_subminute:
+            self.date = self.date + timedelta(minutes=+1)
 
     def __next__(self) -> datetime:
         """Returns the time the schedule would run next.
@@ -63,18 +69,35 @@ class Seeker(Iterator[datetime]):
         """
         return self.next()
 
-    def next(self) -> datetime:
+    def next(self, inclusive: bool = False) -> datetime:
         """Returns the time the schedule would run next.
+
+        By default the result is *exclusive* of the current position: it is always
+        strictly after the start date (or the previously returned value), so the same
+        matching minute is never returned twice in a row.
+
+        Args:
+            inclusive (bool): Only affects the first call on a pristine Seeker. When True,
+                if the start date falls exactly on a matching minute, that minute is
+                returned instead of skipping to the following occurrence. Useful to answer
+                "is there a run due at or after now?". Subsequent calls are always
+                exclusive. A start date carrying seconds/microseconds is never "exactly on"
+                a minute, so inclusive has no effect there.
 
          Returns:
             (datetime): The time the schedule would run next.
         """
         if self.pristine:
             self.pristine = False
+            # On the first call the date already sits on the first candidate minute, except
+            # when the start was on a clean minute boundary and the caller wants exclusive
+            # semantics: then we must step past it. A sub-minute start was already rolled
+            # forward in __init__, so it must not be advanced a second time.
+            if not inclusive and not self._start_had_subminute:
+                self.date = self.date + timedelta(minutes=+1)
         else:
-            one_minute = timedelta(minutes=+1)
-            # Ensure next is never now
-            self.date = self.date + one_minute
+            # Ensure next is strictly after the previously returned value (exclusive).
+            self.date = self.date + timedelta(minutes=+1)
 
         return self.find_date(self.cron.parts)
 
