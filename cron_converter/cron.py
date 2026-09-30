@@ -52,7 +52,11 @@ class Cron:
         return self.validate(item)
 
     def from_string(self, cron_string: str) -> None:
-        """Parses a cron string (minutes - hours - days - months - weekday)
+        """Replace the current schedule by parsing a cron string.
+
+        The replacement is committed only after all five parts (minutes, hours,
+        days, months, and weekday) are valid. If parsing fails, the current
+        schedule remains unchanged.
 
         :param cron_string: (str) The cron string to parse. It has to be made up 5 parts.
         :raises ValueError: Incorrect length of the cron string.
@@ -62,7 +66,7 @@ class Cron:
         raw_cron_parts = cron_string.strip().split()
         if len(raw_cron_parts) != 5:
             raise ValueError("Invalid cron string format")
-        parts = []
+        parts: List[Part] = []
         for item, unit in zip(raw_cron_parts, units):
             part = Part(unit, self.options)
             part.from_string(item)
@@ -78,8 +82,11 @@ class Cron:
             raise LookupError('No schedule found')
         return ' '.join(str(part) for part in self.parts)
 
-    def from_list(self, cron_list: List[List[Union[str, int]]]):
-        """Parses a 2-dimensional array of integers as a cron schedule.
+    def from_list(self, cron_list: List[List[Union[str, int]]]) -> None:
+        """Replace the current schedule by parsing a 2-dimensional list.
+
+        The replacement is committed only after all five parts are valid. If
+        parsing fails, the current schedule remains unchanged.
 
         :param cron_list: (list of list) The 2-dimensional list to parse.
         :raises ValueError: Incorrect length of the cron list.
@@ -87,7 +94,7 @@ class Cron:
         if len(cron_list) != 5:
             raise ValueError('Invalid cron list')
 
-        parts = []
+        parts: List[Part] = []
         for cron_part_list, unit in zip(cron_list, units):
             part = Part(unit, self.options)
             part.from_list(cron_part_list)

@@ -28,7 +28,6 @@ class Seeker(Iterator[datetime]):
         if start_date:
             # Construct the Seeker object from a past or a future date
             try:
-                isinstance(start_date, datetime)
                 self.tz_info = start_date.tzinfo
                 self.date = start_date
             except Exception as exc:
