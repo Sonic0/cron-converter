@@ -62,10 +62,12 @@ class Cron:
         raw_cron_parts = cron_string.strip().split()
         if len(raw_cron_parts) != 5:
             raise ValueError("Invalid cron string format")
+        parts = []
         for item, unit in zip(raw_cron_parts, units):
             part = Part(unit, self.options)
             part.from_string(item)
-            self.parts.append(part)
+            parts.append(part)
+        self.parts = parts
 
     def to_string(self) -> str:
         """Return the cron schedule as a string.
@@ -85,10 +87,12 @@ class Cron:
         if len(cron_list) != 5:
             raise ValueError('Invalid cron list')
 
+        parts = []
         for cron_part_list, unit in zip(cron_list, units):
             part = Part(unit, self.options)
             part.from_list(cron_part_list)
-            self.parts.append(part)
+            parts.append(part)
+        self.parts = parts
 
     def to_list(self) -> List[List[int]]:
         """Returns the cron schedule as a 2-dimensional list of integers
