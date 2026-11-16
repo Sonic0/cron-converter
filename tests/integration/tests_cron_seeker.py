@@ -14,6 +14,7 @@ All tests are data-driven using proven fixtures from production cases.
 import unittest
 from datetime import datetime
 from itertools import islice
+from unittest.mock import patch
 
 from dateutil import tz
 
@@ -147,25 +148,26 @@ class TestSeekerTimezone(unittest.TestCase):
     """Test timezone handling with fixture data"""
 
     def test_timezone_offset_matches(self):
-        """Test that timezone offset is correctly applied"""
+        """Test next/prev dates and offsets across seasons with a fixed clock."""
         for valid_schedule in valid_schedules_timezone:
-            with self.subTest(
-                schedule=valid_schedule['schedule'],
-                timezone=valid_schedule['timezone']
-            ):
-                cron = Cron()
-                cron.from_string(valid_schedule['schedule'])
-                schedule = cron.schedule(timezone_str=valid_schedule['timezone'])
+            for direction in ('next', 'prev'):
+                with self.subTest(
+                    schedule=valid_schedule['schedule'],
+                    timezone=valid_schedule['timezone'],
+                    direction=direction
+                ):
+                    timezone = tz.gettz(valid_schedule['timezone'])
+                    now = datetime.fromisoformat(valid_schedule['now']).replace(tzinfo=timezone)
+                    cron = Cron(valid_schedule['schedule'])
 
-                result = schedule.next()
-                expected_tz = tz.gettz(valid_schedule['timezone'])
-                expected_offset = datetime.now(tz=expected_tz).utcoffset()
+                    # Freeze only the scheduler's clock, keeping real timezone rules.
+                    with patch('cron_converter.sub_modules.seeker.datetime') as clock:
+                        clock.now.return_value = now
+                        schedule = cron.schedule(timezone_str=valid_schedule['timezone'])
+                        result = getattr(schedule, direction)()
 
-                self.assertEqual(
-                    result.utcoffset(),
-                    expected_offset,
-                    f"Timezone offset does not match for {valid_schedule['timezone']}"
-                )
+                    clock.now.assert_called_once_with(timezone)
+                    self.assertEqual(result.isoformat(), valid_schedule[direction])
 
 
 class TestIteratorProtocol(unittest.TestCase):

@@ -172,14 +172,44 @@ valid_schedules = [
 valid_schedules_timezone = [
   {
     'schedule': '10 1 * 6 *',
-    'timezone': 'Etc/UTC'
+    'timezone': 'Etc/UTC',
+    'now': '2026-01-15T12:00:00',
+    'next': '2026-06-01T01:10:00+00:00',
+    'prev': '2025-06-30T01:10:00+00:00'
   },
   {
     'schedule': '10 1 * 6 *',
-    'timezone': 'Europe/Rome'
+    'timezone': 'Europe/Rome',
+    'now': '2026-01-15T12:00:00',
+    'next': '2026-06-01T01:10:00+02:00',
+    'prev': '2025-06-30T01:10:00+02:00'
   },
   {
     'schedule': '10 1 * 6 *',
-    'timezone': 'America/New_York'
+    'timezone': 'America/New_York',
+    'now': '2026-01-15T12:00:00',
+    'next': '2026-06-01T01:10:00-04:00',
+    'prev': '2025-06-30T01:10:00-04:00'
+  },
+  {
+    'schedule': '10 1 * 1 *',
+    'timezone': 'Etc/UTC',
+    'now': '2026-07-15T12:00:00',
+    'next': '2027-01-01T01:10:00+00:00',
+    'prev': '2026-01-31T01:10:00+00:00'
+  },
+  {
+    'schedule': '10 1 * 1 *',
+    'timezone': 'Europe/Rome',
+    'now': '2026-07-15T12:00:00',
+    'next': '2027-01-01T01:10:00+01:00',
+    'prev': '2026-01-31T01:10:00+01:00'
+  },
+  {
+    'schedule': '10 1 * 1 *',
+    'timezone': 'America/New_York',
+    'now': '2026-07-15T12:00:00',
+    'next': '2027-01-01T01:10:00-05:00',
+    'prev': '2026-01-31T01:10:00-05:00'
   }
 ]
