@@ -16,6 +16,8 @@ class Part:
         self.options = options if bool(options) else dict()
         self.unit = unit
         self.values: List[int] = []
+        self._step_start: Union[int, None] = None
+        self._step_value: Union[int, None] = None
 
     def __str__(self) -> str:
         """Print directly the Part Object"""
@@ -98,6 +100,15 @@ class Part:
             step = self._get_step(range_step_string_parts)
 
             if step is not None:
+                # If left side is a single value (not * and not a range), expand to
+                # range(value, max+1) before applying the step. This implements the
+                # standard cron semantic: "starting at N, every step".
+                if range_string != '*' and len(range_list) == 1:
+                    start_value = range_list[0]
+                    range_list = list(range(start_value, self.unit.get('max') + 1))
+                    self._step_start = start_value
+                    self._step_value = step
+
                 interval_values = self._apply_interval(range_list, step)  # filter by step
                 if not len(interval_values):
                     raise ValueError(f'Empty intervals value {cron_part}')
@@ -339,6 +350,17 @@ class Part:
             else:
                 cron_part_str = '*'
         else:
+            # If this part was parsed from a "start/step" expression, reproduce that form
+            if self._step_start is not None and self._step_value is not None:
+                step = self._step_value
+                start = self._step_start
+                if self.is_interval(step) and self.min() == start:
+                    if 'output_hashes' in self.options:
+                        cron_part_str = f'H/{step}'
+                    else:
+                        cron_part_str = f'{start}/{step}'
+                    return cron_part_str
+
             step = self.get_step()
             if step and self.is_interval(step):
                 if self.is_full_interval(step):

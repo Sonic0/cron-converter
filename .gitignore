@@ -146,3 +146,4 @@ dmypy.json
 
 # User stuff
 .idea/**
+uv.lock
