@@ -1,6 +1,6 @@
 import calendar
 import copy
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from typing import TYPE_CHECKING, Iterator, List, Literal, Optional
 
 from dateutil import tz
@@ -112,7 +112,7 @@ class Seeker(Iterator[datetime]):
         return self.find_date(self.cron.parts, True)
 
     def find_date(self, cron_parts: List['Part'], reverse: bool = False) -> datetime:
-        """Returns the time the schedule would run next. # TODO refactor description.
+        """Find the next or previous matching time from the current position.
 
         Args:
             cron_parts (List): List of all cron 'Part'.
@@ -123,21 +123,38 @@ class Seeker(Iterator[datetime]):
         operation: Literal['add', 'subtract'] = 'add'
         if reverse:
             operation = 'subtract'
-        retry = 24
-        while retry:
-            retry -= 1
+        for _ in range(24):
             self._shift_month(cron_parts[3], operation)
-            month_changed = self._shift_day(cron_parts[2], cron_parts[4], operation)
-            if not month_changed:
-                day_changed = self._shift_hour(cron_parts[1], operation)
-                if not day_changed:
-                    hour_changed = self._shift_minute(cron_parts[0], operation)
-                    if not hour_changed:
-                        break
-        else:
-            raise Exception('Unable to find execution time for schedule')
+            if self._shift_day(cron_parts[2], cron_parts[4], operation):
+                continue
+            if self._shift_hour(cron_parts[1], operation):
+                continue
+            if self._shift_minute(cron_parts[0], operation):
+                continue
 
-        return copy.deepcopy(self.date.replace(second=0, microsecond=0))
+            candidate = self.date.replace(second=0, microsecond=0)
+            if reverse or not self._is_nonexistent(candidate):
+                return copy.deepcopy(candidate)
+
+            # Restart at the first real local minute so no valid match is skipped.
+            self.date = candidate + timedelta(minutes=1)
+            while self._is_nonexistent(self.date):
+                self.date += timedelta(minutes=1)
+
+        raise Exception('Unable to find execution time for schedule')
+
+    @staticmethod
+    def _is_nonexistent(date: datetime) -> bool:
+        """Check whether the local time survives a round trip through UTC."""
+        if date.utcoffset() is None:
+            return False
+
+        round_trip = date.astimezone(timezone.utc).astimezone(date.tzinfo)
+        if round_trip.tzinfo is not date.tzinfo:
+            # Preserve behavior for offset-specific tzinfo objects (e.g. pytz).
+            return False
+
+        return round_trip != date
 
     def _shift_month(self, cron_month_part: 'Part', operation: Literal['add', 'subtract']) -> None:
         """Increments/decrements the month value of a date, until a month that matches the schedule is found.
