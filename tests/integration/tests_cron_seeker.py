@@ -12,11 +12,16 @@ All tests are data-driven using proven fixtures from production cases.
 """
 
 import unittest
-from datetime import datetime
+from datetime import datetime, timezone
 from itertools import islice
 from unittest.mock import patch
 
 from dateutil import tz
+
+try:
+    from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
+except ImportError:  # Python 3.8
+    ZoneInfo = None
 
 from cron_converter import Cron
 from tests.integration.fixtures.valid_schedule_date import (
@@ -168,6 +173,44 @@ class TestSeekerTimezone(unittest.TestCase):
 
                     clock.now.assert_called_once_with(timezone)
                     self.assertEqual(result.isoformat(), valid_schedule[direction])
+
+    def test_next_across_spring_forward_gap(self):
+        """A reused Seeker skips nonexistent minutes without missing valid ones."""
+        zone_name = 'Africa/Ceuta'
+        ceuta = tz.gettz(zone_name)
+        self.assertIsNotNone(ceuta)
+        timezones = {'dateutil': ceuta}
+        if ZoneInfo is not None:
+            try:
+                timezones['zoneinfo'] = ZoneInfo(zone_name)
+            except ZoneInfoNotFoundError:
+                pass  # dateutil also ships its own timezone database.
+
+        cases = (
+            ('0 * * * *', '2017-03-25T23:00:00+00:00', [(0, 0), (1, 0), (2, 0)]),
+            (
+                '*/15 * * * *',
+                '2017-03-26T00:30:00+00:00',
+                [(0, 45), (1, 0), (1, 15), (1, 30), (1, 45), (2, 0)],
+            ),
+        )
+        for backend, local_zone in timezones.items():
+            for expression, start_utc, expected_times in cases:
+                with self.subTest(backend=backend, schedule=expression):
+                    start = datetime.fromisoformat(start_utc).astimezone(local_zone)
+                    seeker = Cron(expression).schedule(start_date=start)
+                    local_results = [seeker.next() for _ in expected_times]
+                    utc_results = [result.astimezone(timezone.utc) for result in local_results]
+                    expected_utc = [
+                        datetime(2017, 3, 26, hour, minute, tzinfo=timezone.utc)
+                        for hour, minute in expected_times
+                    ]
+
+                    for earlier, later in zip(utc_results, utc_results[1:]):
+                        self.assertLess(earlier, later)
+                    self.assertEqual(utc_results, expected_utc)
+                    for result in local_results:
+                        self.assertTrue(tz.datetime_exists(result), result.isoformat())
 
 
 class TestIteratorProtocol(unittest.TestCase):
